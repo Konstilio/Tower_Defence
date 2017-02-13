@@ -11,13 +11,11 @@ class GameView : public QGraphicsView
     Q_OBJECT
 
 public:
-    GameView();
+    GameView(QWidget *Parent = 0);
 
 private:
     GameScene *mp_Scene;
 
-    constexpr static int mcp_Width = 1200;
-    constexpr static int mcp_Height = 900;
 };
 
 #endif // GAMEVIEW_H

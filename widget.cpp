@@ -10,10 +10,18 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
 
     QGridLayout *Layout = new QGridLayout();
-    mp_View = new GameView();
+    mp_View = new GameView(this);
+    mp_StatusWidget = new UserStatusWidget(this);
+    mp_BuildMenuWidget = new UserBuildMenuWidget(this);
 
-    Layout->addWidget(mp_View);
+    Layout->addWidget(mp_View, 0, 0, 5, 5);
+    Layout->addWidget(mp_StatusWidget, 0, 5);
+    Layout->addWidget(mp_BuildMenuWidget, 1, 5, 2, 1);
+
+    Layout->setSpacing(3);
     setLayout(Layout);
+
+    resize(Layout->sizeHint());
 }
 
 Widget::~Widget()

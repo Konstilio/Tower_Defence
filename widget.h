@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include "gameview.h"
+#include "userstatuswidget.h"
+#include "userbuildmenuwidget.h"
 
 namespace Ui {
 class Widget;
@@ -20,6 +22,9 @@ private:
     Ui::Widget *ui;
 
     GameView *mp_View;
+    UserStatusWidget *mp_StatusWidget;
+    UserBuildMenuWidget *mp_BuildMenuWidget;
+
 };
 
 #endif // WIDGET_H

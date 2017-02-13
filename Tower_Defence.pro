@@ -27,14 +27,22 @@ SOURCES += main.cpp\
         widget.cpp \
     gameview.cpp \
     gamescene.cpp \
-    tower.cpp
+    tower.cpp \
+    userstatuswidget.cpp \
+    generalutils.cpp \
+    userbuildmenuwidget.cpp
 
 HEADERS  += widget.h \
     gameview.h \
     gamescene.h \
-    tower.h
+    tower.h \
+    userstatuswidget.h \
+    generalutils.h \
+    userbuildmenuwidget.h
 
-FORMS    += widget.ui
+FORMS    += widget.ui \
+    userstatuswidget.ui \
+    userbuildmenuwidget.ui
 
 RESOURCES += \
     resources.qrc

@@ -1,15 +1,20 @@
 #include "tower.h"
+#include "generalutils.h"
 
-Tower::Tower(const QPixmap &Pixmap, QGraphicsItem *Parent)
-    : QGraphicsPixmapItem(Pixmap, Parent)
+// Tower
+
+Tower::Tower(QGraphicsItem *Parent)
+    : QGraphicsPixmapItem(Parent)
 {
 
 }
 
-RedTower::RedTower(const QPixmap &Pixmap, QGraphicsItem *Parent)
-    : Tower(Pixmap, Parent)
-{
+// Red Tower
 
+RedTower::RedTower(QGraphicsItem *Parent)
+    : Tower(Parent)
+{
+    setPixmap(GeneralUtils::Instance().TiledRedTowerPixmap());
 }
 
 int RedTower::getRange() const
@@ -25,4 +30,9 @@ int RedTower::getPower() const
 int RedTower::getCost() const
 {
     return 100;
+}
+
+int RedTower::getId()
+{
+    return 1;
 }

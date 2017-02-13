@@ -1,13 +1,23 @@
 #include "gameview.h"
 #include "gamescene.h"
+#include "generalutils.h"
 
-GameView::GameView()
+GameView::GameView(QWidget *Parent)
+    : QGraphicsView(Parent)
 {
-    setFixedSize(mcp_Width, mcp_Height);
+    auto const &Utils = GeneralUtils::Instance();
+
+    setFixedSize(Utils.GameViewSize());
     setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 
-    mp_Scene = new GameScene(mcp_Width, mcp_Height, 40, 30, this);
-    mp_Scene->setBackgroundBrush(Qt::black);
+    mp_Scene = new GameScene
+            (
+                Utils.GameViewSize().width()
+                , Utils.GameViewSize().height()
+                , Utils.TileSize()
+                , this
+            );
+
     this->setScene(mp_Scene);
 }

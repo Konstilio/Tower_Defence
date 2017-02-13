@@ -6,7 +6,7 @@
 class GameScene : public QGraphicsScene
 {
 public:
-    GameScene(int Width, int Height, int MeshWidth, int MeshHeight, QObject *Parent = Q_NULLPTR);
+    GameScene(int Width, int Height, int TileSize, QObject *Parent = Q_NULLPTR);
 };
 
 #endif // GAMESCENE_H
