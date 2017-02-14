@@ -4,10 +4,11 @@
 
 GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     : QGraphicsScene(Parent)
+    , mp_TileSize(TileSize)
 {
     setSceneRect(0, 0, Width, Height);
-    QPixmap pim(":/Images/sand_template.jpg");
-    setBackgroundBrush(pim.scaled(Width, Height,Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
+    QPixmap bcg(":/Images/sandbackground.jpg");
+    setBackgroundBrush(bcg.scaled(Width, Height, Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
 
     auto MeshWidth = Width / TileSize;
     auto MeshHeight = Height / TileSize;
@@ -22,8 +23,26 @@ GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
         }
     }
 
-    RedTower *Tower = new RedTower();
+    TreeTower *Tower = new TreeTower();
     addItem(Tower);
     Tower->setX(0);
     Tower->setY(0);
+}
+
+QPoint GameScene::mapGlobalToTile(QPoint GloalPos)
+{
+    return QPoint( GloalPos.x() / mp_TileSize, GloalPos.y() / mp_TileSize);
+}
+
+QPoint GameScene::mapTileToGlobal(QPoint TilePos)
+{
+    return QPoint( TilePos.x() * mp_TileSize, TilePos.y() * mp_TileSize);
+}
+
+void GameScene::addGameItem(QGraphicsItem *Item, QPoint TilePos)
+{
+    addItem(Item);
+    QPoint GlobalPos = mapTileToGlobal(TilePos);
+    Item->setX(GlobalPos.x());
+    Item->setY(GlobalPos.y());
 }

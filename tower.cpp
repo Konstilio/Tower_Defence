@@ -9,30 +9,45 @@ Tower::Tower(QGraphicsItem *Parent)
 
 }
 
+// Tower Factory
+
+Tower *TowerFactory::Create(int towerId)
+{
+    if (towerId == TreeTower::getId())
+        return new TreeTower();
+    else
+        Q_ASSERT(false);
+}
+
 // Red Tower
 
-RedTower::RedTower(QGraphicsItem *Parent)
+TreeTower::TreeTower(QGraphicsItem *Parent)
     : Tower(Parent)
 {
-    setPixmap(GeneralUtils::Instance().TiledRedTowerPixmap());
+    setPixmap(GeneralUtils::Instance().TiledTreeTowerPixmap());
 }
 
-int RedTower::getRange() const
+int TreeTower::getRange() const
 {
     return 1;
 }
 
-int RedTower::getPower() const
+int TreeTower::getPower() const
 {
     return 1;
 }
 
-int RedTower::getCost() const
+int TreeTower::getCost() const
 {
     return 100;
 }
 
-int RedTower::getId()
+bool TreeTower::canShoot() const
+{
+    return true;
+}
+
+int TreeTower::getId()
 {
     return 1;
 }

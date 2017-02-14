@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     tower.cpp \
     userstatuswidget.cpp \
     generalutils.cpp \
-    userbuildmenuwidget.cpp
+    userbuildmenuwidget.cpp \
+    gameviewstate.cpp
 
 HEADERS  += widget.h \
     gameview.h \
@@ -38,7 +39,8 @@ HEADERS  += widget.h \
     tower.h \
     userstatuswidget.h \
     generalutils.h \
-    userbuildmenuwidget.h
+    userbuildmenuwidget.h \
+    gameviewstate.h
 
 FORMS    += widget.ui \
     userstatuswidget.ui \

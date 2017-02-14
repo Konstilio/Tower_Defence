@@ -16,9 +16,16 @@ public:
     explicit UserBuildMenuWidget(QWidget *parent = 0);
     ~UserBuildMenuWidget();
 
+signals:
+    void buildWanted(int towerId);
+
 private:
     Ui::UserBuildMenuWidget *ui;
     QButtonGroup *mp_ButtonGroup;
+
+private slots:
+    void onButtonClicked(int buttonId);
+
 };
 
 #endif // USERBUILDMENUWIDGET_H

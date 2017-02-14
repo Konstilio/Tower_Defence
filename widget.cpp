@@ -14,7 +14,7 @@ Widget::Widget(QWidget *parent) :
     mp_StatusWidget = new UserStatusWidget(this);
     mp_BuildMenuWidget = new UserBuildMenuWidget(this);
 
-    Layout->addWidget(mp_View, 0, 0, 5, 5);
+    Layout->addWidget(mp_View, 0, 0, 10, 5);
     Layout->addWidget(mp_StatusWidget, 0, 5);
     Layout->addWidget(mp_BuildMenuWidget, 1, 5, 2, 1);
 
@@ -22,6 +22,8 @@ Widget::Widget(QWidget *parent) :
     setLayout(Layout);
 
     resize(Layout->sizeHint());
+
+    connect(mp_BuildMenuWidget, &UserBuildMenuWidget::buildWanted, mp_View, &GameView::buildWanted);
 }
 
 Widget::~Widget()

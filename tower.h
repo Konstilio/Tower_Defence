@@ -12,16 +12,24 @@ public:
     virtual int getRange() const = 0;
     virtual int getPower() const = 0;
     virtual int getCost() const = 0;
+    virtual bool canShoot() const = 0;
 };
 
-class RedTower : public Tower
+class TowerFactory
 {
 public:
-    RedTower(QGraphicsItem *Parent = 0);
+    Tower static *Create(int towerId);
+};
+
+class TreeTower : public Tower
+{
+public:
+    TreeTower(QGraphicsItem *Parent = 0);
 
     int getRange() const override;
     int getPower() const override;
     int getCost()  const override;
+    bool canShoot() const override;
 
     int static getId();
 };

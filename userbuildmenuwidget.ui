@@ -7,15 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>73</height>
+    <height>84</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton {
+	border: none;
+}</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QPushButton" name="mp_RedTowerButton">
+    <widget class="QPushButton" name="mp_TreeTowerButton">
      <property name="minimumSize">
       <size>
        <width>30</width>

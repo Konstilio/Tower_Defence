@@ -9,7 +9,7 @@ class GeneralUtils
 public:
     static GeneralUtils& Instance();
 
-    QPixmap TiledRedTowerPixmap();
+    QPixmap TiledTreeTowerPixmap();
 
     QSize GameViewSize() const;
     int TileSize() const;

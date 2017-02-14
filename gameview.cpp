@@ -1,6 +1,8 @@
 #include "gameview.h"
 #include "gamescene.h"
 #include "generalutils.h"
+#include "gameviewstate.h"
+#include "tower.h"
 
 GameView::GameView(QWidget *Parent)
     : QGraphicsView(Parent)
@@ -20,4 +22,31 @@ GameView::GameView(QWidget *Parent)
             );
 
     this->setScene(mp_Scene);
+
+    setMouseTracking(true);
+    mp_State = new NormalViewState(this, mp_Scene, this);
+    mp_State->onEnter();
+}
+
+void GameView::mouseMoveEvent(QMouseEvent *event)
+{
+    mp_State->mouseMoveEvent(event);
+}
+
+void GameView::leaveEvent(QEvent *event)
+{
+    mp_State->leaveEvent();
+}
+
+void GameView::buildWanted(int towerId)
+{
+    changeState(new BuildViewState(this, mp_Scene, TowerFactory::Create(towerId), this));
+}
+
+void GameView::changeState(GameViewState *State)
+{
+    mp_State->onExit();
+    mp_State->deleteLater();
+    mp_State = State;
+    mp_State->onEnter();
 }

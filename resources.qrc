@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>Images/RedTower.png</file>
-        <file>Images/sand_template.jpg</file>
+        <file>Images/acidtower.png</file>
+        <file>Images/icetower.png</file>
+        <file>Images/sandbackground.jpg</file>
+        <file>Images/stonetower.png</file>
+        <file>Images/tree.png</file>
     </qresource>
 </RCC>
