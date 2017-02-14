@@ -29,15 +29,24 @@ GeneralUtils &GeneralUtils::Instance()
     return utils;
 }
 
-QPixmap GeneralUtils::TiledTreeTowerPixmap()
+const QPixmap &GeneralUtils::TiledTreeTowerPixmap()
 {
-    if (mp_TiledRedTowerPixmap.isNull())
-    {
-        QPixmap temp = QPixmap(":/Images/tree.png");
-        mp_TiledRedTowerPixmap = temp.scaled(mp_TileSize, mp_TileSize);
-    }
+    return GetTiledBitmap(mp_TiledTreeTowerPixmap, ":/Images/tree.png");
+}
 
-    return mp_TiledRedTowerPixmap;
+const QPixmap &GeneralUtils::TiledAcidTowerPixmap()
+{
+    return GetTiledBitmap(mp_TiledAcidTowerPixmap, ":/Images/acidtower.png");
+}
+
+const QPixmap &GeneralUtils::TiledIceTowerPixmap()
+{
+    return GetTiledBitmap(mp_TiledIceTowerPixmap, ":/Images/icetower.png");
+}
+
+const QPixmap &GeneralUtils::TiledStoneTowerPixmap()
+{
+    return GetTiledBitmap(mp_TiledStoneTowerPixmap, ":/Images/stonetower.png");
 }
 
 QSize GeneralUtils::GameViewSize() const
@@ -48,6 +57,17 @@ QSize GeneralUtils::GameViewSize() const
 int GeneralUtils::TileSize() const
 {
     return mp_TileSize;
+}
+
+const QPixmap& GeneralUtils::GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path)
+{
+    if (CachedPixMap.isNull())
+    {
+        QPixmap temp = QPixmap(Path);
+        CachedPixMap = temp.scaled(mp_TileSize, mp_TileSize);
+    }
+
+    return CachedPixMap;
 }
 
 

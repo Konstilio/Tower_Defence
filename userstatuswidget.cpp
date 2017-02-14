@@ -1,5 +1,6 @@
 #include "userstatuswidget.h"
 #include "ui_userstatuswidget.h"
+#include "tower.h"
 
 UserStatusWidget::UserStatusWidget(QWidget *parent) :
     QWidget(parent),
@@ -11,4 +12,9 @@ UserStatusWidget::UserStatusWidget(QWidget *parent) :
 UserStatusWidget::~UserStatusWidget()
 {
     delete ui;
+}
+
+void UserStatusWidget::onTowerBuilt(int TowerCost)
+{
+
 }

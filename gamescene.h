@@ -11,10 +11,15 @@ public:
     QPoint mapGlobalToTile(QPoint GloalPos);
     QPoint mapTileToGlobal(QPoint TilePos);
 
-    void addGameItem(QGraphicsItem *Item, QPoint TilePos);
+    void AddGameItem(QGraphicsItem *Item, QPoint TilePos);
+    void AddMesh();
+    void RemoveMesh();
 
 private:
     int mp_TileSize;
+    int mp_Width;
+    int mp_Height;
+    QList<QGraphicsLineItem *> mp_MeshLines;
 };
 
 #endif // GAMESCENE_H

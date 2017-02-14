@@ -2,6 +2,7 @@
 #define USERSTATUSWIDGET_H
 
 #include <QWidget>
+class Tower;
 
 namespace Ui {
 class UserStatusWidget;
@@ -14,6 +15,9 @@ class UserStatusWidget : public QWidget
 public:
     explicit UserStatusWidget(QWidget *parent = 0);
     ~UserStatusWidget();
+
+public slots:
+     void onTowerBuilt(int TowerCost);
 
 private:
     Ui::UserStatusWidget *ui;

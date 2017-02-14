@@ -15,8 +15,13 @@ public:
 
     void virtual mouseMoveEvent(QMouseEvent *event) = 0;
     void virtual leaveEvent() = 0;
+    void virtual mousePressEvent(QMouseEvent *event) = 0;
+
     void virtual onEnter() = 0;
     void virtual onExit() = 0;
+
+signals:
+    void wantLeave();
 
 protected:
     GameView *mp_View;
@@ -30,9 +35,14 @@ public:
     NormalViewState(GameView *View, GameScene *Scene, QObject *Parent = 0);
     void mouseMoveEvent(QMouseEvent *event) override;
     void leaveEvent() override;
+    void mousePressEvent(QMouseEvent *event) override;
 
     void onEnter() override;
     void onExit() override;
+
+private:
+    Tower *mp_SelectedTower = nullptr;
+    void ClearSelectedTower();
 };
 
 class BuildViewState : public GameViewState
@@ -42,11 +52,13 @@ public:
     BuildViewState(GameView *View, GameScene *Scene, Tower *TowerToBuild, QObject *Parent = 0);
     void mouseMoveEvent(QMouseEvent *event) override;
     void leaveEvent() override;
+    void mousePressEvent(QMouseEvent *event) override;
 
     void onEnter() override;
     void onExit() override;
 
     Tower *mp_Tower;
+    bool mp_Build = false;
 };
 
 #endif // GAMEVIEWSTATE_H

@@ -9,7 +9,10 @@ class GeneralUtils
 public:
     static GeneralUtils& Instance();
 
-    QPixmap TiledTreeTowerPixmap();
+    const QPixmap &TiledTreeTowerPixmap();
+    const QPixmap &TiledAcidTowerPixmap();
+    const QPixmap &TiledIceTowerPixmap();
+    const QPixmap &TiledStoneTowerPixmap();
 
     QSize GameViewSize() const;
     int TileSize() const;
@@ -18,11 +21,16 @@ private:
     QSize mp_GameViewSize;
     int mp_TileSize;
 
-    QPixmap mp_TiledRedTowerPixmap;
+    QPixmap mp_TiledTreeTowerPixmap;
+    QPixmap mp_TiledAcidTowerPixmap;
+    QPixmap mp_TiledIceTowerPixmap;
+    QPixmap mp_TiledStoneTowerPixmap;
 
     GeneralUtils();
     GeneralUtils(const GeneralUtils& Other) = delete;
     GeneralUtils& operator=(const GeneralUtils& Other) = delete;
+
+    const QPixmap &GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path);
 
 };
 
