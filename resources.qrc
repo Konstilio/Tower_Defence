@@ -5,5 +5,6 @@
         <file>Images/sandbackground.jpg</file>
         <file>Images/stonetower.png</file>
         <file>Images/tree.png</file>
+        <file>Images/ammo.png</file>
     </qresource>
 </RCC>

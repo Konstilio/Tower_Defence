@@ -52,6 +52,12 @@ int Tower::type() const
     return Type;
 }
 
+QPointF Tower::center() const
+{
+    auto Size = GeneralUtils::Instance().TileSize();
+    return { x() + Size/ 2, y() + Size / 2 };
+}
+
 // Tower Factory
 
 Tower *TowerFactory::Create(int towerId)

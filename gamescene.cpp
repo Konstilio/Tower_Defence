@@ -1,6 +1,8 @@
 #include "gamescene.h"
 #include <QDebug>
-#include <tower.h>
+#include "tower.h"
+#include "ammo.h"
+#include <QTimer>
 
 GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     : QGraphicsScene(Parent)
@@ -9,6 +11,7 @@ GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     , mp_Height(Height)
 {
     setSceneRect(0, 0, Width, Height);
+    InitUpdateTimer();
 }
 
 QPoint GameScene::mapGlobalToTile(QPoint GloalPos)
@@ -21,7 +24,7 @@ QPoint GameScene::mapTileToGlobal(QPoint TilePos)
     return QPoint( TilePos.x() * mp_TileSize, TilePos.y() * mp_TileSize);
 }
 
-void GameScene::AddGameItem(QGraphicsItem *Item, QPoint TilePos)
+void GameScene::AddTempGameItem(QGraphicsItem *Item, QPoint TilePos)
 {
     addItem(Item);
     QPoint GlobalPos = mapTileToGlobal(TilePos);
@@ -53,3 +56,32 @@ void GameScene::RemoveMesh()
         mp_MeshLines.pop_front();
     }
 }
+
+void GameScene::CacheTower(Tower *TowerItem)
+{
+    qDebug() << "CacheTower: " << TowerItem;
+    mp_Towers.insert(TowerItem);
+}
+
+void GameScene::Update()
+{
+    for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
+        TowerShoot(*iTower);
+}
+
+void GameScene::InitUpdateTimer()
+{
+    mp_UpdateTimer = new QTimer(this);
+    connect(mp_UpdateTimer, &QTimer::timeout, this, &GameScene::Update);
+    mp_UpdateTimer->start(25);
+}
+
+void GameScene::TowerShoot(Tower *TowerItem)
+{
+    qDebug() << "TowerShoot: " << TowerItem;
+    Ammo *AmmoItem = new Ammo(TowerItem);
+    addItem(AmmoItem);
+    AmmoItem->setX(TowerItem->center().x());
+    AmmoItem->setY(TowerItem->center().y());
+}
+

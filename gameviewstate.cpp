@@ -88,7 +88,7 @@ BuildViewState::BuildViewState(GameView *View, GameScene *Scene, Tower *TowerToB
 void BuildViewState::mouseMoveEvent(QMouseEvent *event)
 {
     mp_Scene->removeItem(mp_Tower);
-    mp_Scene->AddGameItem(mp_Tower, mp_Scene->mapGlobalToTile(event->pos()));
+    mp_Scene->AddTempGameItem(mp_Tower, mp_Scene->mapGlobalToTile(event->pos()));
 }
 
 void BuildViewState::leaveEvent()
@@ -115,6 +115,7 @@ void BuildViewState::onExit()
         mp_Scene->removeItem(mp_Tower);
     else
     {
+        mp_Scene->CacheTower(mp_Tower);
         emit mp_View->towerBuilt(mp_Tower->getCost());
         mp_Tower->ClearIndicator();
     }

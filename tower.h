@@ -2,6 +2,7 @@
 #define TOWER_H
 
 #include <QGraphicsItem>
+#include "generalutils.h"
 
 
 class Tower : public QGraphicsPixmapItem
@@ -15,7 +16,7 @@ public:
     };
 
     // For Qt purposes
-    enum { Type = UserType + 1 };
+    enum { Type = UserType + ECustomItemRole_Tower };
 
     Tower(QGraphicsItem *Parent = 0);
     void InitRange();
@@ -28,6 +29,7 @@ public:
     virtual bool canShoot() const = 0;
 
     int type() const;
+    QPointF center() const;
 
 protected:
     QGraphicsEllipseItem *mp_RangeCircle = nullptr;

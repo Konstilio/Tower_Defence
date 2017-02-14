@@ -49,6 +49,14 @@ const QPixmap &GeneralUtils::TiledStoneTowerPixmap()
     return GetTiledBitmap(mp_TiledStoneTowerPixmap, ":/Images/stonetower.png");
 }
 
+const QPixmap &GeneralUtils::AmmoPixmap()
+{
+    if (mp_AmmoPixmap.isNull())
+        mp_AmmoPixmap = QPixmap(":/Images/ammo.png");
+
+    return mp_AmmoPixmap;
+}
+
 QSize GeneralUtils::GameViewSize() const
 {
     return mp_GameViewSize;

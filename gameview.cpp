@@ -52,25 +52,25 @@ void GameView::mousePressEvent(QMouseEvent *event)
 
 void GameView::wheelEvent(QWheelEvent *event)
 {
-    constexpr double scaleFactor = 1.15;
-    if(event->delta() > 0)
-    {
-       auto nextZoom = mp_CurrentZoom * scaleFactor;
-       if (nextZoom > 2.)
-           return;
+//    constexpr double scaleFactor = 1.15;
+//    if(event->delta() > 0)
+//    {
+//       auto nextZoom = mp_CurrentZoom * scaleFactor;
+//       if (nextZoom > 2.)
+//           return;
 
-       mp_CurrentZoom = nextZoom;
-       scale(scaleFactor, scaleFactor);
-    }
-    else
-    {
-       auto nextZoom = mp_CurrentZoom / scaleFactor;
-       if (nextZoom < 1.)
-           return;
+//       mp_CurrentZoom = nextZoom;
+//       scale(scaleFactor, scaleFactor);
+//    }
+//    else
+//    {
+//       auto nextZoom = mp_CurrentZoom / scaleFactor;
+//       if (nextZoom < 1.)
+//           return;
 
-       mp_CurrentZoom = nextZoom;
-       scale(1.0 / scaleFactor, 1.0 / scaleFactor);
-    }
+//       mp_CurrentZoom = nextZoom;
+//       scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+//    }
 }
 
 void GameView::buildWanted(int towerId)
