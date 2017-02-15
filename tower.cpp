@@ -17,7 +17,7 @@ void Tower::InitRange()
     qreal radius = getRange() * GeneralUtils::Instance().TileSize();
     qreal size = (2 * getRange() + 1) * GeneralUtils::Instance().TileSize();
     mp_RangeCircle = new QGraphicsEllipseItem(x() - radius, y() - radius, size, size, this);
-    mp_RangeCircle->setPen(QPen(canShoot() ? QColor(255, 255, 255, 200) : QColor(0, 0, 0, 0)));
+    mp_RangeCircle->setPen(QPen(CanShoot() ? QColor(255, 255, 255, 200) : QColor(0, 0, 0, 0)));
 }
 
 void Tower::Indicate(Tower::EIndicator Indicator)
@@ -46,13 +46,60 @@ void Tower::ClearIndicator()
     mp_RangeCircle->setBrush(QBrush());
 }
 
+bool Tower::ReadyShoot()
+{
+    if (--mp_ShootTicks == 0)
+    {
+        ResetShootTicks();
+        return true;
+    }
+
+    return false;
+}
+
+void Tower::ResetShootTicks()
+{
+    mp_ShootTicks = getShootTicks();
+}
+
+bool Tower::getHaveTarget() const
+{
+    return mp_HaveTarget;
+}
+
+Enemy *Tower::getTarget() const
+{
+    return mp_Target;
+}
+
+void Tower::AqcuireTarget(Enemy *Target)
+{
+    mp_HaveTarget = true;
+    mp_Target = Target;
+}
+
+void Tower::ReleaseTarget()
+{
+    mp_HaveTarget = false;
+}
+
+QList<QGraphicsItem *> Tower::TowerCollidingItems()
+{
+    return collidingItems();
+}
+
+QList<QGraphicsItem *> Tower::RangeCollidingItems()
+{
+    return mp_RangeCircle->collidingItems();
+}
+
 int Tower::type() const
 {
     // Enable the use of qgraphicsitem_cast with this item.
     return Type;
 }
 
-QPointF Tower::center() const
+QPointF Tower::Center() const
 {
     auto Size = GeneralUtils::Instance().TileSize();
     return { x() + Size/ 2, y() + Size / 2 };
@@ -75,6 +122,7 @@ Tower *TowerFactory::Create(int towerId)
         Q_ASSERT(false);
 
     Result->InitRange();
+    Result->ResetShootTicks();
     return Result;
 }
 
@@ -101,7 +149,12 @@ int TreeTower::getCost() const
     return 100;
 }
 
-bool TreeTower::canShoot() const
+int TreeTower::getShootTicks() const
+{
+    return 0;
+}
+
+bool TreeTower::CanShoot() const
 {
     return false;
 }
@@ -134,7 +187,12 @@ int AcidTower::getCost() const
     return 100;
 }
 
-bool AcidTower::canShoot() const
+int AcidTower::getShootTicks() const
+{
+    return 10;
+}
+
+bool AcidTower::CanShoot() const
 {
     return true;
 }
@@ -167,7 +225,12 @@ int IceTower::getCost() const
     return 100;
 }
 
-bool IceTower::canShoot() const
+int IceTower::getShootTicks() const
+{
+    return 10;
+}
+
+bool IceTower::CanShoot() const
 {
     return true;
 }
@@ -200,7 +263,12 @@ int StoneTower::getCost() const
     return 100;
 }
 
-bool StoneTower::canShoot() const
+int StoneTower::getShootTicks() const
+{
+    return 10;
+}
+
+bool StoneTower::CanShoot() const
 {
     return true;
 }

@@ -6,5 +6,10 @@
         <file>Images/stonetower.png</file>
         <file>Images/tree.png</file>
         <file>Images/ammo.png</file>
+        <file>Images/ending.png</file>
+        <file>Images/mightyoutcast.png</file>
+        <file>Images/outlaw.png</file>
+        <file>Images/royalkatanamen.png</file>
+        <file>Images/starting.png</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@ enum ECustomItemRole
 {
     ECustomItemRole_Tower = 1
     , ECustomItemRole_Ammo = 2
+    , ECustomItemRole_Enemy = 3
 };
 
 class GeneralUtils
@@ -15,12 +16,19 @@ class GeneralUtils
 public:
     static GeneralUtils& Instance();
 
-    const QPixmap &TiledTreeTowerPixmap();
-    const QPixmap &TiledAcidTowerPixmap();
-    const QPixmap &TiledIceTowerPixmap();
-    const QPixmap &TiledStoneTowerPixmap();
+    const QPixmap &TiledTreeTowerPixmap() const;
+    const QPixmap &TiledAcidTowerPixmap() const;
+    const QPixmap &TiledIceTowerPixmap() const;
+    const QPixmap &TiledStoneTowerPixmap() const;
 
-    const QPixmap &AmmoPixmap();
+    const QPixmap &AmmoPixmap() const;
+
+    const QPixmap &TiledStartPixmap() const;
+    const QPixmap &TiledEndPixmap() const;
+
+    const QPixmap &TiledOutcastEnemyPixmap() const;
+    const QPixmap &TiledOutlawEnemyPixmap() const;
+    const QPixmap &TiledKatanamenEnemyPixmap() const;
 
     QSize GameViewSize() const;
     int TileSize() const;
@@ -30,19 +38,28 @@ private:
     int mp_TileSize;
 
     // Tiled Towers
-    QPixmap mp_TiledTreeTowerPixmap;
-    QPixmap mp_TiledAcidTowerPixmap;
-    QPixmap mp_TiledIceTowerPixmap;
-    QPixmap mp_TiledStoneTowerPixmap;
+    mutable QPixmap mp_TiledTreeTowerPixmap;
+    mutable QPixmap mp_TiledAcidTowerPixmap;
+    mutable QPixmap mp_TiledIceTowerPixmap;
+    mutable QPixmap mp_TiledStoneTowerPixmap;
 
     // Ammo
-    QPixmap mp_AmmoPixmap;
+    mutable QPixmap mp_AmmoPixmap;
+
+    // Ends
+    mutable QPixmap mp_TiledStartPixmap;
+    mutable QPixmap mp_TiledEndPixmap;
+
+    //Enemy
+    mutable QPixmap mp_TiledOutcastEnemyPixmap;
+    mutable QPixmap mp_TiledOutlawEnemyPixmap;
+    mutable QPixmap mp_TiledKatanamenEnemyPixmap;
 
     GeneralUtils();
     GeneralUtils(const GeneralUtils& Other) = delete;
     GeneralUtils& operator=(const GeneralUtils& Other) = delete;
 
-    const QPixmap &GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path);
+    const QPixmap &GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path) const;
 
 };
 

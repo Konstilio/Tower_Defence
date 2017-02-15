@@ -6,6 +6,7 @@
 
 class Tower;
 class QGraphicsItem;
+class Enemy;
 
 class Ammo : public QGraphicsPixmapItem
 {
@@ -13,11 +14,29 @@ public:
     // For Qt purposes
     enum { Type = UserType + ECustomItemRole_Ammo };
 
-    Ammo(Tower *TowerItem, QGraphicsItem *Parent = 0);
+    Ammo(Tower *TowerItem, Enemy *Target, QGraphicsItem *Parent = 0);
+
     int getPower() const;
+    const QPointF &getStartPos() const;
+    int getRange() const;
+    Enemy *getTarget() const;
+
+    void InitRotation();
+    void Update();
+
+    int type() const;
 
 private:
-    Tower *mp_Tower; // Tower that made shot
+    // Tower that made shot
+    Tower *mp_Tower;
+
+    int mp_Power;
+    QPointF mp_StartPos;
+    int mp_Range;
+
+    Enemy *mp_Target;
+
+    constexpr static int mcp_Step = 10;
 };
 
 #endif // AMMO_H

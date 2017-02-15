@@ -30,8 +30,13 @@ GameView::GameView(QWidget *Parent)
 
     setMouseTracking(true);
 
-    mp_State = new NormalViewState(this, mp_Scene, this);
-    connect(mp_State, &GameViewState::wantLeave, this, &GameView::changeStateToNormal);
+    mp_NormalState = new NormalViewState(this, mp_Scene, this);
+    mp_BuildState = new BuildViewState(this, mp_Scene, this);
+
+    connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::changeStateToNormal);
+    connect(mp_Scene, &GameScene::SceneUpdated, mp_BuildState, &BuildViewState::onSceneUpdated);
+
+    mp_State = mp_NormalState;
     mp_State->onEnter();
 }
 
@@ -75,19 +80,18 @@ void GameView::wheelEvent(QWheelEvent *event)
 
 void GameView::buildWanted(int towerId)
 {
-    changeState(new BuildViewState(this, mp_Scene, TowerFactory::Create(towerId), this));
+    mp_BuildState->AttachTower(TowerFactory::Create(towerId));
+    changeState(mp_BuildState);
 }
 
 void GameView::changeState(GameViewState *State)
 {
     mp_State->onExit();
-    mp_State->deleteLater();
     mp_State = State;
-    connect(mp_State, &GameViewState::wantLeave, this, &GameView::changeStateToNormal);
     mp_State->onEnter();
 }
 
 void GameView::changeStateToNormal()
 {
-    changeState(new NormalViewState(this, mp_Scene, this));
+    changeState(mp_NormalState);
 }

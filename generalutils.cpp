@@ -8,13 +8,13 @@ GeneralUtils::GeneralUtils()
     QRect rec = QApplication::desktop()->screenGeometry();
     if (rec.width() >= 1400)
     {
-        mp_GameViewSize = QSize(1200, 800);
-        mp_TileSize = 40;
+        mp_GameViewSize = QSize(1200, 900);
+        mp_TileSize = 30;
     }
     else if (rec.width() >= 1000)
     {
          mp_GameViewSize = QSize(900, 600);
-         mp_TileSize = 30;
+         mp_TileSize = 25;
     }
     else
     {
@@ -29,32 +29,57 @@ GeneralUtils &GeneralUtils::Instance()
     return utils;
 }
 
-const QPixmap &GeneralUtils::TiledTreeTowerPixmap()
+const QPixmap &GeneralUtils::TiledTreeTowerPixmap() const
 {
     return GetTiledBitmap(mp_TiledTreeTowerPixmap, ":/Images/tree.png");
 }
 
-const QPixmap &GeneralUtils::TiledAcidTowerPixmap()
+const QPixmap &GeneralUtils::TiledAcidTowerPixmap() const
 {
     return GetTiledBitmap(mp_TiledAcidTowerPixmap, ":/Images/acidtower.png");
 }
 
-const QPixmap &GeneralUtils::TiledIceTowerPixmap()
+const QPixmap &GeneralUtils::TiledIceTowerPixmap() const
 {
     return GetTiledBitmap(mp_TiledIceTowerPixmap, ":/Images/icetower.png");
 }
 
-const QPixmap &GeneralUtils::TiledStoneTowerPixmap()
+const QPixmap &GeneralUtils::TiledStoneTowerPixmap() const
 {
     return GetTiledBitmap(mp_TiledStoneTowerPixmap, ":/Images/stonetower.png");
 }
 
-const QPixmap &GeneralUtils::AmmoPixmap()
+const QPixmap &GeneralUtils::AmmoPixmap() const
 {
     if (mp_AmmoPixmap.isNull())
         mp_AmmoPixmap = QPixmap(":/Images/ammo.png");
 
     return mp_AmmoPixmap;
+}
+
+const QPixmap &GeneralUtils::TiledStartPixmap() const
+{
+    return GetTiledBitmap(mp_TiledStartPixmap, ":/Images/starting.png");
+}
+
+const QPixmap &GeneralUtils::TiledEndPixmap() const
+{
+     return GetTiledBitmap(mp_TiledEndPixmap, ":/Images/ending.png");
+}
+
+const QPixmap &GeneralUtils::TiledOutcastEnemyPixmap() const
+{
+    return GetTiledBitmap(mp_TiledOutcastEnemyPixmap, ":/Images/mightyoutcast.png");
+}
+
+const QPixmap &GeneralUtils::TiledOutlawEnemyPixmap() const
+{
+    return GetTiledBitmap(mp_TiledOutlawEnemyPixmap, ":/Images/outlaw.png");
+}
+
+const QPixmap &GeneralUtils::TiledKatanamenEnemyPixmap() const
+{
+    return GetTiledBitmap(mp_TiledKatanamenEnemyPixmap, ":/Images/royalkatanamen.png");
 }
 
 QSize GeneralUtils::GameViewSize() const
@@ -67,7 +92,7 @@ int GeneralUtils::TileSize() const
     return mp_TileSize;
 }
 
-const QPixmap& GeneralUtils::GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path)
+const QPixmap& GeneralUtils::GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path) const
 {
     if (CachedPixMap.isNull())
     {

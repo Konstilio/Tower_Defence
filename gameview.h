@@ -6,6 +6,8 @@
 
 class GameScene;
 class GameViewState;
+class NormalViewState;
+class BuildViewState;
 class Tower;
 
 class GameView : public QGraphicsView
@@ -33,6 +35,9 @@ private:
     GameViewState *mp_State;
 
     double mp_CurrentZoom;
+
+    NormalViewState *mp_NormalState = nullptr;
+    BuildViewState *mp_BuildState = nullptr;
 };
 
 #endif // GAMEVIEW_H

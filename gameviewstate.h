@@ -20,9 +20,6 @@ public:
     void virtual onEnter() = 0;
     void virtual onExit() = 0;
 
-signals:
-    void wantLeave();
-
 protected:
     GameView *mp_View;
     GameScene *mp_Scene;
@@ -49,7 +46,7 @@ class BuildViewState : public GameViewState
 {
     Q_OBJECT
 public:
-    BuildViewState(GameView *View, GameScene *Scene, Tower *TowerToBuild, QObject *Parent = 0);
+    BuildViewState(GameView *View, GameScene *Scene, QObject *Parent = 0);
     void mouseMoveEvent(QMouseEvent *event) override;
     void leaveEvent() override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -57,8 +54,19 @@ public:
     void onEnter() override;
     void onExit() override;
 
-    Tower *mp_Tower;
+    void AttachTower(Tower *Tower);
+
+public slots:
+    void onSceneUpdated();
+
+signals:
+    void wantLeave();
+
+private:
+
+    Tower *mp_Tower = nullptr;
     bool mp_Build = false;
+    bool mp_CanBuild = false;
 };
 
 #endif // GAMEVIEWSTATE_H

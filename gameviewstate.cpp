@@ -3,6 +3,7 @@
 #include "gamescene.h"
 #include "tower.h"
 #include <QCursor>
+#include <QDebug>
 
 GameViewState::GameViewState(GameView *View, GameScene *Scene, QObject *Parent)
     : QObject(Parent)
@@ -78,9 +79,8 @@ void NormalViewState::ClearSelectedTower()
 
 // BuildViewState
 
-BuildViewState::BuildViewState(GameView *View, GameScene *Scene, Tower *TowerToBuild, QObject *Parent)
+BuildViewState::BuildViewState(GameView *View, GameScene *Scene, QObject *Parent)
     : GameViewState(View, Scene, Parent)
-    , mp_Tower(TowerToBuild)
 {
 
 }
@@ -89,6 +89,8 @@ void BuildViewState::mouseMoveEvent(QMouseEvent *event)
 {
     mp_Scene->removeItem(mp_Tower);
     mp_Scene->AddTempGameItem(mp_Tower, mp_Scene->mapGlobalToTile(event->pos()));
+    mp_CanBuild = mp_Scene->CanBuildTower(mp_Tower);
+    mp_Tower->Indicate(mp_CanBuild ? Tower::EIndicator_CanBuild : Tower::EIndicator_CanNotBuild);
 }
 
 void BuildViewState::leaveEvent()
@@ -99,12 +101,13 @@ void BuildViewState::leaveEvent()
 void BuildViewState::mousePressEvent(QMouseEvent *event)
 {
     mp_Build = event->button() == Qt::LeftButton;
-    emit wantLeave();
+    if (mp_Build && mp_CanBuild || !mp_Build)
+        emit wantLeave();
 }
 
 void BuildViewState::onEnter()
 {
-    mp_Scene->AddMesh();
+    mp_Scene->ShowMesh();
     mp_Tower->Indicate(Tower::EIndicator_CanBuild);
     mp_View->setCursor(Qt::PointingHandCursor);
 }
@@ -115,11 +118,26 @@ void BuildViewState::onExit()
         mp_Scene->removeItem(mp_Tower);
     else
     {
-        mp_Scene->CacheTower(mp_Tower);
+        mp_Scene->BuildTower(mp_Tower);
         emit mp_View->towerBuilt(mp_Tower->getCost());
         mp_Tower->ClearIndicator();
     }
 
-    mp_Scene->RemoveMesh();
+    mp_Tower = nullptr;
+    mp_Scene->HideMesh();
     mp_View->setCursor(Qt::ArrowCursor);
+}
+
+void BuildViewState::AttachTower(Tower *Tower)
+{
+    mp_Tower = Tower;
+}
+
+void BuildViewState::onSceneUpdated()
+{
+    if (!mp_Tower)
+        return;
+
+    mp_CanBuild = mp_Scene->CanBuildTower(mp_Tower);
+    mp_Tower->Indicate(mp_CanBuild ? Tower::EIndicator_CanBuild : Tower::EIndicator_CanNotBuild);
 }

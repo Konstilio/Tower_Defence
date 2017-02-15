@@ -4,6 +4,7 @@
 #include <QGraphicsItem>
 #include "generalutils.h"
 
+class Enemy;
 
 class Tower : public QGraphicsPixmapItem
 {
@@ -22,17 +23,31 @@ public:
     void InitRange();
     void Indicate(EIndicator Indicator);
     void ClearIndicator();
+    bool ReadyShoot();
+    void ResetShootTicks();
+
+    bool getHaveTarget() const;
+    Enemy *getTarget() const;
+    void AqcuireTarget(Enemy *Target);
+    void ReleaseTarget();
+
+    QList<QGraphicsItem *> TowerCollidingItems();
+    QList<QGraphicsItem *> RangeCollidingItems();
 
     virtual int getRange() const = 0;
     virtual int getPower() const = 0;
     virtual int getCost() const = 0;
-    virtual bool canShoot() const = 0;
+    virtual int getShootTicks() const = 0;
+    virtual bool CanShoot() const = 0;
 
     int type() const;
-    QPointF center() const;
+    QPointF Center() const;
 
 protected:
     QGraphicsEllipseItem *mp_RangeCircle = nullptr;
+    int mp_ShootTicks = 0;
+    bool mp_HaveTarget = false;
+    Enemy *mp_Target;
 };
 
 class TowerFactory
@@ -49,7 +64,8 @@ public:
     int getRange() const override;
     int getPower() const override;
     int getCost()  const override;
-    bool canShoot() const override;
+    int getShootTicks() const override;
+    bool CanShoot() const override;
 
     int static getId();
 };
@@ -62,7 +78,8 @@ public:
     int getRange() const override;
     int getPower() const override;
     int getCost()  const override;
-    bool canShoot() const override;
+    int getShootTicks() const override;
+    bool CanShoot() const override;
 
     int static getId();
 };
@@ -75,7 +92,8 @@ public:
     int getRange() const override;
     int getPower() const override;
     int getCost()  const override;
-    bool canShoot() const override;
+    int getShootTicks() const override;
+    bool CanShoot() const override;
 
     int static getId();
 };
@@ -88,7 +106,8 @@ public:
     int getRange() const override;
     int getPower() const override;
     int getCost()  const override;
-    bool canShoot() const override;
+    int getShootTicks() const override;
+    bool CanShoot() const override;
 
     int static getId();
 };

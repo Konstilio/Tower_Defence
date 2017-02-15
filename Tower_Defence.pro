@@ -35,7 +35,10 @@ SOURCES += main.cpp\
     generalutils.cpp \
     userbuildmenuwidget.cpp \
     gameviewstate.cpp \
-    ammo.cpp
+    ammo.cpp \
+    tilegraph.cpp \
+    enemy.cpp \
+    level.cpp
 
 HEADERS  += widget.h \
     gameview.h \
@@ -45,7 +48,10 @@ HEADERS  += widget.h \
     generalutils.h \
     userbuildmenuwidget.h \
     gameviewstate.h \
-    ammo.h
+    ammo.h \
+    tilegraph.h \
+    enemy.h \
+    level.h
 
 FORMS    += widget.ui \
     userstatuswidget.ui \
