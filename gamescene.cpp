@@ -208,7 +208,7 @@ void GameScene::TowerShoot(Tower *TowerItem)
 
 void GameScene::RemoveOutOfRangeAmmos()
 {
-    for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ;)
+    for (auto iAmmo = mp_Ammos.begin(); iAmmo != mp_Ammos.end() ;)
     {
         Ammo *AmmoItem = *iAmmo;
         QLineF Line(AmmoItem->pos(), AmmoItem->getStartPos());
@@ -245,7 +245,15 @@ void GameScene::AddEnemy()
 void GameScene::UpdateAmmoEnemyCollisions()
 {
     qDebug() << "UpdateAmmoEnemyCollisions begin: "  << mp_Enemies.size();
-    for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ;)
+    auto RemoveAmmo = [&](QSet<Ammo *>::iterator &AmmoIt)
+    {
+        Ammo *AmmoItem = *AmmoIt;
+        auto iTemp = AmmoIt++;
+        removeItem(AmmoItem);
+        mp_Ammos.erase(iTemp);
+    };
+
+    for (auto iAmmo = mp_Ammos.begin(); iAmmo != mp_Ammos.end() ;)
     {
         Ammo *AmmoItem = *iAmmo;
         Enemy *TargetEnemy = AmmoItem->getTarget();
@@ -255,9 +263,7 @@ void GameScene::UpdateAmmoEnemyCollisions()
         if (EnemyIt == mp_Enemies.end())
         {
             // If not - delete this ammo
-            auto iTemp = iAmmo++;
-            removeItem(AmmoItem);
-            mp_Ammos.erase(iTemp);
+            RemoveAmmo(iAmmo);
             continue;
         }
 
@@ -275,6 +281,9 @@ void GameScene::UpdateAmmoEnemyCollisions()
                 removeItem(TargetEnemy);
                 mp_Enemies.erase(EnemyIt);
             }
+
+            RemoveAmmo(iAmmo);
+            continue;
         }
 
         ++iAmmo;
