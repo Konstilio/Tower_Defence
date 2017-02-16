@@ -45,10 +45,10 @@ private:
     void UpdateTowerTargetOnEnemy(Enemy *EnemyItem);
     void TowerShoot(Tower *TowerItem);
 
-    // Ammo Updates
+    // Ammo, Enemy Updates
     void RemoveOutOfRangeAmmos();
-
     void AddEnemy();
+    void UpdateAmmoEnemyCollisions();
 
     // Mesh
     void InitMesh();

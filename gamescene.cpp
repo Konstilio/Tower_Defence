@@ -122,8 +122,8 @@ void GameScene::Update()
     timer.start();
 
     AddEnemy();
-
     RemoveOutOfRangeAmmos();
+    UpdateAmmoEnemyCollisions();
 
     // Release Target
     for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
@@ -135,7 +135,6 @@ void GameScene::Update()
 
     for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
          TowerShoot(*iTower);
-
 
     for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ; ++iAmmo)
         (*iAmmo)->Update();
@@ -236,10 +235,52 @@ void GameScene::AddEnemy()
     addItem(EnemyItem);
     EnemyItem->setX(mp_StartGlobalPos.x());
     EnemyItem->setY(mp_StartGlobalPos.y());
-    EnemyItem->setTarget(mp_EndGlobalPos);
+    EnemyItem->setTargetPoint(QPointF(mp_Width, 0));
 
     mp_Enemies.insert(EnemyItem);
     mp_LevelSettings.m_EnemyTicks = 80;
+}
+
+// Todo: maybe take rotation into account
+void GameScene::UpdateAmmoEnemyCollisions()
+{
+    qDebug() << "UpdateAmmoEnemyCollisions begin: "  << mp_Enemies.size();
+    for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ;)
+    {
+        Ammo *AmmoItem = *iAmmo;
+        Enemy *TargetEnemy = AmmoItem->getTarget();
+        auto EnemyIt = mp_Enemies.find(TargetEnemy);
+
+        // Check if target enemy exists
+        if (EnemyIt == mp_Enemies.end())
+        {
+            // If not - delete this ammo
+            auto iTemp = iAmmo++;
+            removeItem(AmmoItem);
+            mp_Ammos.erase(iTemp);
+            continue;
+        }
+
+        // check whether ammo collides with enemy
+        QRectF AmmoRect = AmmoItem->boundingRect();
+        AmmoRect.moveTo(AmmoItem->pos());
+
+        QRectF EnemyRect = TargetEnemy->boundingRect();
+        EnemyRect.moveTo(TargetEnemy->pos());
+
+        if (EnemyRect.intersects(AmmoRect))
+        {
+            if (TargetEnemy->Shooted(AmmoItem))
+            {
+                removeItem(TargetEnemy);
+                mp_Enemies.erase(EnemyIt);
+            }
+        }
+
+        ++iAmmo;
+    }
+
+    qDebug() << "UpdateAmmoEnemyCollisions end: "  << mp_Enemies.size();
 }
 
 

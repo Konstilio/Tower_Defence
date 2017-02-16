@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "ammo.h"
 #include "generalutils.h"
 #include <qmath.h>
 
@@ -10,9 +11,15 @@ Enemy::Enemy(QGraphicsItem *Parent)
 
 }
 
+// Needed For QT
 int Enemy::type() const
 {
     return Type;
+}
+
+int Enemy::getHealth() const
+{
+    return mp_Health;
 }
 
 void Enemy::Update()
@@ -24,16 +31,25 @@ void Enemy::Update()
     setPos(x() + dx, y() + dy);
 }
 
-void Enemy::setTarget(const QPointF &Target)
+void Enemy::setTargetPoint(const QPointF &Target)
 {
-    mp_Target = Target;
-    QLineF ln(pos(), mp_Target);
+    mp_TargetPoint = Target;
+    QLineF ln(pos(), mp_TargetPoint);
     setRotation(-1. * ln.angle());
+}
+
+bool Enemy::Shooted(const Ammo *AmmoItem)
+{
+    mp_Health -= AmmoItem->getPower();
+    if (mp_Health <= 0)
+        return true;
+
+    return false;
 }
 
 QPointF Enemy::Center()
 {
-    return {x() + GeneralUtils::Instance().TileSize() / 2, y() + GeneralUtils::Instance().TileSize() / 2};
+    return {x() + boundingRect().width() / 2, y() + boundingRect().height() / 2};
 }
 
 // Enemy Factory
@@ -57,6 +73,7 @@ Enemy *EnemyFactory::Create(int EnemyId)
 OutcastEnemy::OutcastEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
+    mp_Health = 5;
     setPixmap(GeneralUtils::Instance().TiledOutcastEnemyPixmap());
 }
 
@@ -66,11 +83,6 @@ int OutcastEnemy::getBonus() const
 }
 
 int OutcastEnemy::getSpeed() const
-{
-    return 1;
-}
-
-int OutcastEnemy::getHealth() const
 {
     return 1;
 }
@@ -85,6 +97,7 @@ int OutcastEnemy::getId()
 OutlawEnemy::OutlawEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
+    mp_Health = 15;
     setPixmap(GeneralUtils::Instance().TiledOutlawEnemyPixmap());
 }
 
@@ -98,11 +111,6 @@ int OutlawEnemy::getSpeed() const
     return 1;
 }
 
-int OutlawEnemy::getHealth() const
-{
-    return 3;
-}
-
 int OutlawEnemy::getId()
 {
     return 2;
@@ -113,6 +121,7 @@ int OutlawEnemy::getId()
 KatanamenEnemy::KatanamenEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
+    mp_Health = 5;
     setPixmap(GeneralUtils::Instance().TiledKatanamenEnemyPixmap());
 }
 
@@ -124,11 +133,6 @@ int KatanamenEnemy::getBonus() const
 int KatanamenEnemy::getSpeed() const
 {
     return 3;
-}
-
-int KatanamenEnemy::getHealth() const
-{
-    return 1;
 }
 
 int KatanamenEnemy::getId()

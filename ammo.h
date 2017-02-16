@@ -36,7 +36,7 @@ private:
 
     Enemy *mp_Target;
 
-    constexpr static int mcp_Step = 10;
+    constexpr static int mcp_Step = 8;
 };
 
 #endif // AMMO_H

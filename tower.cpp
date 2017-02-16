@@ -14,9 +14,10 @@ Tower::Tower(QGraphicsItem *Parent)
 
 void Tower::InitRange()
 {
-    qreal radius = getRange() * GeneralUtils::Instance().TileSize();
-    qreal size = (2 * getRange() + 1) * GeneralUtils::Instance().TileSize();
-    mp_RangeCircle = new QGraphicsEllipseItem(x() - radius, y() - radius, size, size, this);
+    int RectSize = boundingRect().width();
+    qreal Radius = getRange() * RectSize;
+    qreal Size = (2 * getRange() + 1) * RectSize;
+    mp_RangeCircle = new QGraphicsEllipseItem(x() - Radius, y() - Radius, Size, Size, this);
     mp_RangeCircle->setPen(QPen(CanShoot() ? QColor(255, 255, 255, 200) : QColor(0, 0, 0, 0)));
 }
 
@@ -179,7 +180,7 @@ int AcidTower::getRange() const
 
 int AcidTower::getPower() const
 {
-    return 2;
+    return 1;
 }
 
 int AcidTower::getCost() const
@@ -255,7 +256,7 @@ int StoneTower::getRange() const
 
 int StoneTower::getPower() const
 {
-    return 2;
+    return 3;
 }
 
 int StoneTower::getCost() const

@@ -4,6 +4,7 @@
 #include <QGraphicsPixmapItem>
 #include <QPointF>
 #include "generalutils.h"
+class Ammo;
 
 class Enemy : public QGraphicsPixmapItem
 {
@@ -15,16 +16,20 @@ public:
 
     virtual int getBonus() const = 0;
     virtual int getSpeed() const = 0;
-    virtual int getHealth() const = 0;
+    int getHealth() const;
 
     int type() const;
 
     void Update();
-    void setTarget(const QPointF &Target);
+    void setTargetPoint(const QPointF &Target);
+    bool Shooted(const Ammo *AmmoItem);
     QPointF Center();
 
+protected:
+    int mp_Health = 0;
+
 private:
-    QPointF mp_Target;
+    QPointF mp_TargetPoint;
 
 };
 
@@ -41,7 +46,6 @@ public:
 
     int getBonus() const override;
     int getSpeed()  const override;
-    int getHealth() const override;
 
     int static getId();
 };
@@ -53,7 +57,6 @@ public:
 
     int getBonus() const override;
     int getSpeed()  const override;
-    int getHealth() const override;
 
     int static getId();
 };
@@ -65,7 +68,6 @@ public:
 
     int getBonus() const override;
     int getSpeed()  const override;
-    int getHealth() const override;
 
     int static getId();
 };
