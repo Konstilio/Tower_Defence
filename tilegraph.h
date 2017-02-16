@@ -6,6 +6,8 @@
 #include <QVector>
 #include <QSet>
 
+#include <functional>
+
 inline uint qHash (const QPoint & key)
 {
     return qHash (static_cast <qint64> (key.x () ) << 32 | key.y () );
@@ -47,12 +49,27 @@ public:
 
     int static MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile);
     void getLogicNeighbours(const Tile& Current, int Distance, QSet<const Tile *> &o_Result) const; // 9 Neighbours (include itself, if distance 1)
-private:
-    QVector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
 
+    void ForEachTile(std::function<void(const Tile *)> &&TileFunc) const;
+
+    QVector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
+private:
     int mp_TilesWidth;
     int mp_TilesHeight;
     QHash<QPoint, Tile *> mp_Tiles;
+};
+
+struct DijkstraSearchResult
+{
+    QHash<const Tile *, int> m_Distance;
+    QHash<const Tile *, const Tile *> m_Next;
+    const Tile *m_Destination = nullptr;
+};
+
+class DijkstraSearch
+{
+    // Find shortest pathes to dst for all graph
+    DijkstraSearchResult operator()(const TileGraph &Graph, const QPoint &TilePos);
 };
 
 #endif // TILEGRAPH_H

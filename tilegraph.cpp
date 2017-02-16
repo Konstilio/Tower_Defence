@@ -1,5 +1,9 @@
 #include "tilegraph.h"
 #include "qmath.h"
+#include <QMap>
+#include <utility>
+#include <limits>
+#include <set>
 
 // Tile
 Tile::Tile(int X, int Y)
@@ -99,4 +103,63 @@ void TileGraph::getLogicNeighbours(const Tile &Current, int Distance, QSet<const
 
         }
     }
+}
+
+void TileGraph::ForEachTile(std::function<void (const Tile *)> &&TileFunc) const
+{
+    for (auto iTile = mp_Tiles.begin(); iTile != mp_Tiles.end(); ++iTile)
+        TileFunc(iTile.value());
+}
+
+// DijkstraSearch
+
+DijkstraSearchResult DijkstraSearch::operator()(const TileGraph &Graph, const QPoint &TilePos)
+{
+    std::set<std::pair<int ,const Tile *>> DistanceMap; // std here to use ordered set
+    const Tile *Destination = &Graph.getTile(TilePos);
+    DistanceMap.emplace(std::make_pair(0, Destination));
+    
+    DijkstraSearchResult Result;
+    Result.m_Distance[Destination] = 0;
+    Result.m_Next[Destination] = nullptr;
+    Result.m_Destination = Destination;
+    
+    // Init start data
+    Graph.ForEachTile
+    (
+        [&](const Tile *CurrentTile)
+        {
+            if (CurrentTile != Destination)
+            {
+                DistanceMap.emplace(std::make_pair(std::numeric_limits<int>::max(), CurrentTile));
+                Result.m_Distance[CurrentTile] = std::numeric_limits<int>::max();
+                Result.m_Next[Destination] = nullptr;
+            }
+        }
+    );
+    
+    // Run Dijkstra loop
+    while (!DistanceMap.empty())
+    {
+        auto it = DistanceMap.begin();
+        int СurrentDistance = it->first;
+        const Tile *CurrentTile = it->second;
+        DistanceMap.erase(it);
+
+        QVector<const Tile *> Neighbours = Graph.getPathNeighbours(*CurrentTile);
+        for (const Tile * Neighbour : Neighbours)
+        {
+            int NewDistance = СurrentDistance + 1;
+            int OldDistance = Result.m_Distance[Neighbour];
+            if (NewDistance < OldDistance)
+            {
+                DistanceMap.erase(std::make_pair(OldDistance, Neighbour));
+                Result.m_Distance[Neighbour] = NewDistance;
+                Result.m_Next[Neighbour] = CurrentTile;
+                DistanceMap.emplace(std::make_pair(NewDistance, Neighbour));
+            }
+        }
+    }
+
+    return Result;
 }
