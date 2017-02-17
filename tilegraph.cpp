@@ -47,21 +47,41 @@ TileGraph::TileGraph(int TilesWidth, int TilesHeight)
     : mp_TilesWidth(TilesWidth)
     , mp_TilesHeight(TilesHeight)
 {
+    mp_Tiles.resize(mp_TilesWidth * mp_TilesHeight);
     for (int iWidth = 0; iWidth < TilesWidth; ++iWidth)
     {
         for (int iHeight = 0; iHeight < TilesHeight; ++iHeight)
-            mp_Tiles.insert(QPoint(iWidth, iHeight), new Tile(iWidth, iHeight));
+            mp_Tiles[iHeight * mp_TilesWidth + iWidth] = new Tile(iWidth, iHeight);
+    }
+}
+
+TileGraph::~TileGraph()
+{
+    for (auto iTile = mp_Tiles.begin(); iTile != mp_Tiles.end(); ++iTile)
+    {
+        delete (*iTile);
+        *iTile = nullptr;
     }
 }
 
 Tile &TileGraph::getTile(const QPoint &TilePos)
 {
-    return *mp_Tiles[TilePos];
+    return getTile(TilePos.x(), TilePos.y());
 }
 
 const Tile &TileGraph::getTile(const QPoint &TilePos) const
 {
-    return *mp_Tiles[TilePos];
+    return getTile(TilePos.x(), TilePos.y());
+}
+
+Tile &TileGraph::getTile(int X, int Y)
+{
+    return *mp_Tiles[Y * mp_TilesWidth + X];
+}
+
+const Tile &TileGraph::getTile(int X, int Y) const
+{
+    return *mp_Tiles[Y * mp_TilesWidth + X];
 }
 
 int TileGraph::MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile)
@@ -108,35 +128,49 @@ void TileGraph::getLogicNeighbours(const Tile &Current, int Distance, QSet<const
 void TileGraph::ForEachTile(std::function<void (const Tile *)> &&TileFunc) const
 {
     for (auto iTile = mp_Tiles.begin(); iTile != mp_Tiles.end(); ++iTile)
-        TileFunc(iTile.value());
+        TileFunc(*iTile);
 }
+
+int TileGraph::getTileIndex(const Tile *CurrentTile) const
+{
+    return CurrentTile->getY() * mp_TilesWidth + CurrentTile->getX();
+}
+
+int TileGraph::getSize() const
+{
+    return mp_TilesWidth * mp_TilesHeight;
+}
+
+QPoint TileGraph::getNextPathPoint(const QPoint &TilePos, const ShortestPathResult &Result)
+{
+    const auto &CurrentTile = getTile(TilePos);
+    const Tile *NextTile = Result.m_Next[getTileIndex(&CurrentTile)];
+    Q_ASSERT(NextTile);
+    return {NextTile->getX(), NextTile->getY()};
+}
+
+int TileGraph::getPathDistance(const QPoint &TilePos, const ShortestPathResult &Result)
+{
+    const auto &CurrentTile = getTile(TilePos);
+    return Result.m_Distance[getTileIndex(&CurrentTile)];
+}
+
 
 // DijkstraSearch
 
-DijkstraSearchResult DijkstraSearch::operator()(const TileGraph &Graph, const QPoint &TilePos)
+ShortestPathResult DijkstraSearch::operator()(const TileGraph &Graph, int X, int Y)
 {
     std::set<std::pair<int ,const Tile *>> DistanceMap; // std here to use ordered set
-    const Tile *Destination = &Graph.getTile(TilePos);
+    const Tile *Destination = &Graph.getTile(X, Y);
     DistanceMap.emplace(std::make_pair(0, Destination));
     
-    DijkstraSearchResult Result;
-    Result.m_Distance[Destination] = 0;
-    Result.m_Next[Destination] = nullptr;
+    ShortestPathResult Result;
+    Result.m_Distance = QVector<int>(Graph.getSize(), std::numeric_limits<int>::max());
+    Result.m_Next = QVector<const Tile *>(Graph.getSize(), nullptr);
+
+    Result.m_Distance[Graph.getTileIndex(Destination)] = 0;
+    Result.m_Next[Graph.getTileIndex(Destination)] = Destination;
     Result.m_Destination = Destination;
-    
-    // Init start data
-    Graph.ForEachTile
-    (
-        [&](const Tile *CurrentTile)
-        {
-            if (CurrentTile != Destination)
-            {
-                DistanceMap.emplace(std::make_pair(std::numeric_limits<int>::max(), CurrentTile));
-                Result.m_Distance[CurrentTile] = std::numeric_limits<int>::max();
-                Result.m_Next[Destination] = nullptr;
-            }
-        }
-    );
     
     // Run Dijkstra loop
     while (!DistanceMap.empty())
@@ -149,13 +183,16 @@ DijkstraSearchResult DijkstraSearch::operator()(const TileGraph &Graph, const QP
         QVector<const Tile *> Neighbours = Graph.getPathNeighbours(*CurrentTile);
         for (const Tile * Neighbour : Neighbours)
         {
+            if (Neighbour->getType() == Tile::EType_Busy || Neighbour->getType() == Tile::EType_Temp)
+                continue;
+
             int NewDistance = СurrentDistance + 1;
-            int OldDistance = Result.m_Distance[Neighbour];
+            int OldDistance = Result.m_Distance[Graph.getTileIndex(Neighbour)];
             if (NewDistance < OldDistance)
             {
                 DistanceMap.erase(std::make_pair(OldDistance, Neighbour));
-                Result.m_Distance[Neighbour] = NewDistance;
-                Result.m_Next[Neighbour] = CurrentTile;
+                Result.m_Distance[Graph.getTileIndex(Neighbour)] = NewDistance;
+                Result.m_Next[Graph.getTileIndex(Neighbour)] = CurrentTile;
                 DistanceMap.emplace(std::make_pair(NewDistance, Neighbour));
             }
         }
@@ -163,3 +200,9 @@ DijkstraSearchResult DijkstraSearch::operator()(const TileGraph &Graph, const QP
 
     return Result;
 }
+
+ShortestPathResult DijkstraSearch::operator()(const TileGraph &Graph, const QPoint &TilePos)
+{
+    return operator ()(Graph, TilePos.x(), TilePos.y());
+}
+

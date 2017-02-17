@@ -42,12 +42,18 @@ public:
 
     int type() const;
     QPointF Center() const;
+    qreal getRangeRadius() const;
 
 protected:
     QGraphicsEllipseItem *mp_RangeCircle = nullptr;
     int mp_ShootTicks = 0;
     bool mp_HaveTarget = false;
+
+    // Enemy target to shoot
     Enemy *mp_Target;
+
+    // Radius in global coordintares from tower center
+    qreal mp_RangeRadius = 0.;
 };
 
 class TowerFactory

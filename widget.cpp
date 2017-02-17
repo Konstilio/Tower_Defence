@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include "level.h"
 
 #include <QGridLayout>
 
@@ -23,8 +24,9 @@ Widget::Widget(QWidget *parent) :
 
     resize(Layout->sizeHint());
 
-   connect(mp_BuildMenuWidget, &UserBuildMenuWidget::buildWanted, mp_View, &GameView::buildWanted, Qt::QueuedConnection);
-   connect(mp_View, &GameView::towerBuilt, mp_StatusWidget, &UserStatusWidget::onTowerBuilt, Qt::QueuedConnection);
+    connect(mp_BuildMenuWidget, &UserBuildMenuWidget::buildWanted, mp_View, &GameView::buildWanted, Qt::QueuedConnection);
+    connect(mp_View, &GameView::LevelChanged, mp_StatusWidget, &UserStatusWidget::LevelChanged);
+
 }
 
 Widget::~Widget()

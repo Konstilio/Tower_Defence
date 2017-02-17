@@ -2,7 +2,7 @@
 #define USERSTATUSWIDGET_H
 
 #include <QWidget>
-class Tower;
+class Level;
 
 namespace Ui {
 class UserStatusWidget;
@@ -17,7 +17,7 @@ public:
     ~UserStatusWidget();
 
 public slots:
-     void onTowerBuilt(int TowerCost);
+    void LevelChanged(Level *CurrentLevel);
 
 private:
     Ui::UserStatusWidget *ui;

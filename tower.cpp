@@ -19,6 +19,7 @@ void Tower::InitRange()
     qreal Size = (2 * getRange() + 1) * RectSize;
     mp_RangeCircle = new QGraphicsEllipseItem(x() - Radius, y() - Radius, Size, Size, this);
     mp_RangeCircle->setPen(QPen(CanShoot() ? QColor(255, 255, 255, 200) : QColor(0, 0, 0, 0)));
+    mp_RangeRadius = mp_RangeCircle->boundingRect().width() / 2;
 }
 
 void Tower::Indicate(Tower::EIndicator Indicator)
@@ -106,6 +107,11 @@ QPointF Tower::Center() const
     return { x() + Size/ 2, y() + Size / 2 };
 }
 
+qreal Tower::getRangeRadius() const
+{
+    return mp_RangeRadius;
+}
+
 // Tower Factory
 
 Tower *TowerFactory::Create(int towerId)
@@ -147,7 +153,7 @@ int TreeTower::getPower() const
 
 int TreeTower::getCost() const
 {
-    return 100;
+    return 5;
 }
 
 int TreeTower::getShootTicks() const
@@ -185,7 +191,7 @@ int AcidTower::getPower() const
 
 int AcidTower::getCost() const
 {
-    return 100;
+    return 10;
 }
 
 int AcidTower::getShootTicks() const
@@ -223,7 +229,7 @@ int IceTower::getPower() const
 
 int IceTower::getCost() const
 {
-    return 100;
+    return 20;
 }
 
 int IceTower::getShootTicks() const
@@ -261,12 +267,12 @@ int StoneTower::getPower() const
 
 int StoneTower::getCost() const
 {
-    return 100;
+    return 20;
 }
 
 int StoneTower::getShootTicks() const
 {
-    return 10;
+    return 15;
 }
 
 bool StoneTower::CanShoot() const

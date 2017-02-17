@@ -39,37 +39,47 @@ private:
     EType mp_Type;
 };
 
+struct ShortestPathResult;
+
 class TileGraph
 {
 public:
     TileGraph(int TilesWidth, int TilesHeight);
+    ~TileGraph();
 
     Tile &getTile(const QPoint &TilePos);
     const Tile &getTile(const QPoint & TilePos) const;
+    Tile &getTile(int X, int Y);
+    const Tile &getTile(int X, int Y) const;
 
     int static MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile);
     void getLogicNeighbours(const Tile& Current, int Distance, QSet<const Tile *> &o_Result) const; // 9 Neighbours (include itself, if distance 1)
+    QVector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
 
     void ForEachTile(std::function<void(const Tile *)> &&TileFunc) const;
+    int getTileIndex(const Tile *CurrentTile) const;
+    int getSize() const;
 
-    QVector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
+    QPoint getNextPathPoint(const QPoint &TilePos, ShortestPathResult const &Result);
+    int getPathDistance(const QPoint &TilePos, ShortestPathResult const &Result);
 private:
     int mp_TilesWidth;
     int mp_TilesHeight;
-    QHash<QPoint, Tile *> mp_Tiles;
+    QVector<Tile *> mp_Tiles;
 };
 
-struct DijkstraSearchResult
+struct ShortestPathResult
 {
-    QHash<const Tile *, int> m_Distance;
-    QHash<const Tile *, const Tile *> m_Next;
+    QVector<int> m_Distance;
+    QVector<const Tile *> m_Next;
     const Tile *m_Destination = nullptr;
 };
 
-class DijkstraSearch
+struct DijkstraSearch
 {
     // Find shortest pathes to dst for all graph
-    DijkstraSearchResult operator()(const TileGraph &Graph, const QPoint &TilePos);
+    ShortestPathResult operator()(const TileGraph &Graph, const QPoint &TilePos);
+    ShortestPathResult operator()(const TileGraph &Graph, int X, int Y);
 };
 
 #endif // TILEGRAPH_H

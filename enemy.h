@@ -20,8 +20,12 @@ public:
 
     int type() const;
 
-    void Update();
-    void setTargetPoint(const QPointF &Target);
+    // Returns true if close to TargetPoint
+    bool Update();
+
+    void setTargetPos(const QPointF &Target);
+    const QPointF &getTargetPoint();
+
     bool Shooted(const Ammo *AmmoItem);
     QPointF Center();
 
@@ -29,7 +33,7 @@ protected:
     int mp_Health = 0;
 
 private:
-    QPointF mp_TargetPoint;
+    QPointF mp_TargetPos;
 
 };
 

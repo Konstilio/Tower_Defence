@@ -119,7 +119,6 @@ void BuildViewState::onExit()
     else
     {
         mp_Scene->BuildTower(mp_Tower);
-        emit mp_View->towerBuilt(mp_Tower->getCost());
         mp_Tower->ClearIndicator();
     }
 

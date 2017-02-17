@@ -8,7 +8,10 @@ class GraphTests : public QObject
 {
     Q_OBJECT
 private slots:
-    void TestPath();
+    void TestBase();
+    void TestClearPath();
+    void TestBusyPath();
+    void TestHalfBusyPath();
 };
 
 #endif // GRAPHTESTS_H

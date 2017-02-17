@@ -2,6 +2,8 @@
 #include "ammo.h"
 #include "generalutils.h"
 #include <qmath.h>
+#include <cmath>
+#include <QLineF>
 
 // Enemy
 
@@ -22,20 +24,29 @@ int Enemy::getHealth() const
     return mp_Health;
 }
 
-void Enemy::Update()
+bool Enemy::Update()
 {
     auto alpha = rotation();
-    qreal dy = getSpeed() * qSin(qDegreesToRadians(alpha));
-    qreal dx = getSpeed() * qCos(qDegreesToRadians(alpha));
+    int dy = std::round(getSpeed() * qSin(qDegreesToRadians(alpha)));
+    int dx = std::round(getSpeed() * qCos(qDegreesToRadians(alpha)));
 
+    // we use int here to avoid negative value that makes item non visible
     setPos(x() + dx, y() + dy);
+
+    QLineF Line(pos(), mp_TargetPos);
+    return Line.length() < 0.1;
 }
 
-void Enemy::setTargetPoint(const QPointF &Target)
+void Enemy::setTargetPos(const QPointF &Target)
 {
-    mp_TargetPoint = Target;
-    QLineF ln(pos(), mp_TargetPoint);
+    mp_TargetPos = Target;
+    QLineF ln(pos(), mp_TargetPos);
     setRotation(-1. * ln.angle());
+}
+
+const QPointF &Enemy::getTargetPoint()
+{
+    return mp_TargetPos;
 }
 
 bool Enemy::Shooted(const Ammo *AmmoItem)
@@ -65,6 +76,7 @@ Enemy *EnemyFactory::Create(int EnemyId)
     else
         Q_ASSERT(false);
 
+    Result->setTransformOriginPoint(Result->boundingRect().width() / 2, Result->boundingRect().height() / 2);
     return Result;
 }
 

@@ -6,6 +6,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11
 CONFIG += -Wno-inconsistent-missing-override
+CONFIG += x64
 
 TEMPLATE = app
 

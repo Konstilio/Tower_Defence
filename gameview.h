@@ -9,6 +9,7 @@ class GameViewState;
 class NormalViewState;
 class BuildViewState;
 class Tower;
+class Level;
 
 class GameView : public QGraphicsView
 {
@@ -25,7 +26,7 @@ public slots:
     void buildWanted(int towerId);
 
 signals:
-    void towerBuilt(int TowerCost);
+    void LevelChanged(Level *CurrentLevel);
 
 private:
     void changeState(GameViewState *State);

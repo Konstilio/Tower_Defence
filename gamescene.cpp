@@ -6,6 +6,7 @@
 #include <QElapsedTimer>
 #include "generalutils.h"
 #include "enemy.h"
+#include "level.h"
 
 GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     : QGraphicsScene(Parent)
@@ -17,9 +18,6 @@ GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     , mp_Graph(mp_TilesWidth, mp_TilesHeight)
 {
     setSceneRect(0, 0, Width, Height);
-    InitEndPoints();
-    InitMesh();
-    InitUpdateTimer();
 }
 
 QPoint GameScene::mapGlobalToTile(const QPointF &GloalPos) const
@@ -72,13 +70,29 @@ void GameScene::ShowMesh()
 void GameScene::HideMesh()
 {
     //for (auto *iMeshLine : mp_MeshLines)
-        //iMeshLine->hide();
+    //iMeshLine->hide();
+}
+
+void GameScene::StartGame()
+{
+    mp_Level = new Level(this);
+
+    InitEndPoints();
+    InitMesh();
+    InitUpdateTimer();
+
+    mp_DijkstraResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+
+    emit LevelChanged(mp_Level);
 }
 
 void GameScene::BuildTower(Tower *TowerItem)
 {
     QPoint TilePos = mapGlobalToTile(TowerItem->pos());
+
     mp_Graph.getTile(TilePos).setType(Tile::EType_Busy);
+    mp_DijkstraResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+
     mp_Towers.insert(TowerItem);
 
     QSet<const Tile *> Neighbours;
@@ -88,6 +102,9 @@ void GameScene::BuildTower(Tower *TowerItem)
         QPoint RangePoint(Neighbour->getX(), Neighbour->getY());
         mp_PoseToTowerRange[RangePoint].insert(TowerItem);
     }
+
+    mp_Level->ReduceCosts(TowerItem->getCost());
+    emit LevelChanged(mp_Level);
 }
 
 bool GameScene::CanBuildTower(Tower *TowerItem) const
@@ -95,19 +112,23 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
     QElapsedTimer timer;
     timer.start();
 
+    if (mp_Level->getCosts() < TowerItem->getCost())
+        return false;
+
     // First check tiles
     QPoint TilePos = mapGlobalToTile(TowerItem->pos());
-    if (!mp_Graph.getTile(TilePos).getType() == Tile::EType_Empty)
+    if (!(mp_Graph.getTile(TilePos).getType() == Tile::EType_Empty))
         return false;
 
     // Check Distance to ends
     if (TileGraph::MaxTileDistance(TilePos, mp_StartTilePos) <= 1 || TileGraph::MaxTileDistance(TilePos, mp_EndTilePos) <= 1)
         return false;
 
-    // Check Enemies since they are not part of graph
+    // Check if close to Enemy since they are not part of graph
     for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
     {
         QPoint EnemyTilePos = mapGlobalToTile((*iEnemy)->pos());
+        qDebug() << "EnemyTilePos:" << EnemyTilePos;
         if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) <= 1)
             return false;
     }
@@ -139,9 +160,7 @@ void GameScene::Update()
     for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ; ++iAmmo)
         (*iAmmo)->Update();
 
-    for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
-        (*iEnemy)->Update();
-
+    MoveEnemies();
 
     emit SceneUpdated();
     qDebug() << "Update() took " << timer.elapsed() << " ms " << "Ammos: " << mp_Ammos.size();
@@ -183,7 +202,11 @@ void GameScene::UpdateTowerTargetOnEnemy(Enemy *EnemyItem)
     for (auto *TowerItem : Towers)
     {
         if (TowerItem->CanShoot() && !TowerItem->getHaveTarget())
-            TowerItem->AqcuireTarget(EnemyItem);
+        {
+            QLineF Line(TowerItem->pos(), EnemyItem->pos());
+            if (Line.length() < TowerItem->getRangeRadius())
+                TowerItem->AqcuireTarget(EnemyItem);
+        }
     }
 }
 
@@ -225,26 +248,26 @@ void GameScene::RemoveOutOfRangeAmmos()
 
 void GameScene::AddEnemy()
 {
-    if (--mp_LevelSettings.m_EnemyTicks > 0)
+    if (mp_Level->IncEnemyTicks() > 0)
         return;
 
-    if (mp_Enemies.size() == mp_LevelSettings.m_MaxEnemies)
+    if (mp_Enemies.size() == mp_Level->getMaxEnemies())
         return;
 
     Enemy *EnemyItem = EnemyFactory::Create(OutcastEnemy::getId());
     addItem(EnemyItem);
     EnemyItem->setX(mp_StartGlobalPos.x());
     EnemyItem->setY(mp_StartGlobalPos.y());
-    EnemyItem->setTargetPoint(QPointF(mp_Width, 0));
+
+    QPointF NextTarget = mapTileToGlobal(mp_Graph.getNextPathPoint(mp_StartTilePos, mp_DijkstraResult));
+    EnemyItem->setTargetPos(NextTarget);
 
     mp_Enemies.insert(EnemyItem);
-    mp_LevelSettings.m_EnemyTicks = 80;
 }
 
 // Todo: maybe take rotation into account
 void GameScene::UpdateAmmoEnemyCollisions()
 {
-    qDebug() << "UpdateAmmoEnemyCollisions begin: "  << mp_Enemies.size();
     auto RemoveAmmo = [&](QSet<Ammo *>::iterator &AmmoIt)
     {
         Ammo *AmmoItem = *AmmoIt;
@@ -278,8 +301,11 @@ void GameScene::UpdateAmmoEnemyCollisions()
         {
             if (TargetEnemy->Shooted(AmmoItem))
             {
+                // Enemy killed
                 removeItem(TargetEnemy);
                 mp_Enemies.erase(EnemyIt);
+                mp_Level->AddCosts(TargetEnemy->getBonus());
+                emit LevelChanged(mp_Level);
             }
 
             RemoveAmmo(iAmmo);
@@ -288,8 +314,21 @@ void GameScene::UpdateAmmoEnemyCollisions()
 
         ++iAmmo;
     }
+}
 
-    qDebug() << "UpdateAmmoEnemyCollisions end: "  << mp_Enemies.size();
+void GameScene::MoveEnemies()
+{
+    for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
+    {
+        Enemy *EnemyItem = (*iEnemy);
+        if (EnemyItem->Update())
+        {
+            QPoint CurrentNextPoint = mapGlobalToTile(EnemyItem->getTargetPoint());
+            QPointF NextTarget = mapTileToGlobal(mp_Graph.getNextPathPoint(CurrentNextPoint, mp_DijkstraResult));
+            EnemyItem->setTargetPos(NextTarget);
+        }
+       qDebug() << EnemyItem->pos();
+    }
 }
 
 

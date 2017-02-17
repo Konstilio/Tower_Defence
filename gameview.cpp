@@ -3,6 +3,7 @@
 #include "generalutils.h"
 #include "gameviewstate.h"
 #include "tower.h"
+#include "level.h"
 
 GameView::GameView(QWidget *Parent)
     : QGraphicsView(Parent)
@@ -23,6 +24,7 @@ GameView::GameView(QWidget *Parent)
             );
 
     this->setScene(mp_Scene);
+    setSceneRect(mp_Scene->sceneRect());
 
     QPixmap bcg(":/Images/sandbackground.jpg");
     setBackgroundBrush(bcg.scaled(width(), height(), Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
@@ -35,9 +37,11 @@ GameView::GameView(QWidget *Parent)
 
     connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::changeStateToNormal);
     connect(mp_Scene, &GameScene::SceneUpdated, mp_BuildState, &BuildViewState::onSceneUpdated);
+    connect(mp_Scene, &GameScene::LevelChanged, this, &GameView::LevelChanged, Qt::QueuedConnection);
+    mp_Scene->StartGame();
 
     mp_State = mp_NormalState;
-    mp_State->onEnter();
+    mp_State->onEnter();        
 }
 
 void GameView::mouseMoveEvent(QMouseEvent *event)

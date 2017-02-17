@@ -5,18 +5,19 @@
 #include <QPoint>
 #include <QSet>
 #include "tilegraph.h"
-#include "level.h"
 
 class Tower;
 class QTimer;
 class Ammo;
 class Enemy;
+class Level;
 
 class GameScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
     GameScene(int Width, int Height, int TileSize, QObject *Parent = Q_NULLPTR);
+
     QPoint mapGlobalToTile(const QPointF &GloalPos) const;
     QPointF mapTileToGlobal(const QPoint &TilePos) const;
     QPointF mapTileToGlobalCenter(const QPoint &TilePos) const;
@@ -32,10 +33,11 @@ public:
     void HideMesh();
 
 public slots:
-    void Update();
+    void StartGame();
 
 signals:
     void SceneUpdated();
+    void LevelChanged(Level *CurrentLevel);
 
 private:
     void InitUpdateTimer();
@@ -49,10 +51,15 @@ private:
     void RemoveOutOfRangeAmmos();
     void AddEnemy();
     void UpdateAmmoEnemyCollisions();
+    void MoveEnemies();
 
     // Mesh
     void InitMesh();
 
+private slots:
+    void Update();
+
+private:
     int mp_TileSize;
     int mp_Width;
     int mp_Height;
@@ -69,13 +76,14 @@ private:
     QHash<QPoint, QSet<Tower *>> mp_PoseToTowerRange;
 
     TileGraph mp_Graph;
+    ShortestPathResult mp_DijkstraResult;
 
     QPointF mp_StartGlobalPos;
     QPointF mp_EndGlobalPos;
     QPoint mp_StartTilePos;
     QPoint mp_EndTilePos;
 
-    LevelSettings mp_LevelSettings;
+    Level* mp_Level = nullptr;
 };
 
 #endif // GAMESCENE_H
