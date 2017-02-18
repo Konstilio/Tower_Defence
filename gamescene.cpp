@@ -352,7 +352,7 @@ void GameScene::TowerShoot(Tower *TowerItem)
     if (!TowerItem->getHaveTarget())
         return;
 
-    Ammo *AmmoItem = new Ammo(TowerItem, TowerItem->getTarget());
+    Ammo *AmmoItem = TowerItem->ShootAmmo();
     addItem(AmmoItem);
     AmmoItem->setX(TowerItem->Center().x());
     AmmoItem->setY(TowerItem->Center().y());
@@ -434,7 +434,7 @@ void GameScene::UpdateAmmoEnemyCollisions()
         {
             if (TargetEnemy->Shooted(AmmoItem))
             {
-                // Enemy killed
+                // Enemy killed (TODO: Move to function)
                 removeItem(TargetEnemy);
                 mp_Enemies.erase(EnemyIt);
                 mp_Level->AddCosts(TargetEnemy->getBonus());

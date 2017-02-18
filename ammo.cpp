@@ -4,15 +4,14 @@
 #include <QLine>
 #include "enemy.h"
 
-Ammo::Ammo(Tower *TowerItem, Enemy *Target, QGraphicsItem *Parent)
-    : QGraphicsPixmapItem(Parent)
+Ammo::Ammo(Tower *TowerItem, Enemy *Target)
+    : QGraphicsPixmapItem()
     , mp_Tower(TowerItem)
     , mp_Target(Target)
     , mp_Power(TowerItem->getPower())
     , mp_StartPos(TowerItem->Center())
     , mp_Range(TowerItem->getRange())
 {
-    setPixmap(GeneralUtils::Instance().AmmoPixmap());
 }
 
 int Ammo::getPower() const

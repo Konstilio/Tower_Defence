@@ -1,6 +1,7 @@
 #include "tower.h"
 #include "generalutils.h"
 #include "generalutils.h"
+#include "ammo.h"
 #include <QBrush>
 #include <QPen>
 
@@ -132,6 +133,12 @@ qreal Tower::getRangeRadius() const
     return mp_RangeRadius;
 }
 
+Ammo *Tower::ShootAmmo()
+{
+    Q_ASSERT(CanShoot());
+    return new Ammo(this, mp_Target);
+}
+
 // Tower Factory
 
 Tower *TowerFactory::Create(int towerId)
@@ -211,6 +218,13 @@ bool AcidTower::CanBeUpgraded() const
     return true;
 }
 
+Ammo *AcidTower::ShootAmmo()
+{
+    Ammo *Result = Tower::ShootAmmo();
+    Result->setPixmap(GeneralUtils::Instance().AmmoAcidPixmap());
+    return Result;
+}
+
 // IceTower
 
 IceTower::IceTower(QGraphicsItem *Parent)
@@ -241,6 +255,13 @@ bool IceTower::CanBeUpgraded() const
     return true;
 }
 
+Ammo *IceTower::ShootAmmo()
+{
+    Ammo *Result = Tower::ShootAmmo();
+    Result->setPixmap(GeneralUtils::Instance().AmmoIcePixmap());
+    return Result;
+}
+
 // StoneTower
 
 StoneTower::StoneTower(QGraphicsItem *Parent)
@@ -269,4 +290,11 @@ bool StoneTower::CanShoot() const
 bool StoneTower::CanBeUpgraded() const
 {
     return true;
+}
+
+Ammo *StoneTower::ShootAmmo()
+{
+    Ammo *Result = Tower::ShootAmmo();
+    Result->setPixmap(GeneralUtils::Instance().AmmoStonePixmap());
+    return Result;
 }

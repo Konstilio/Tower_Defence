@@ -22,8 +22,6 @@ public:
     const QPixmap &TiledStoneTowerPixmap() const;
     const QPixmap &TiledSuperiorTowerPixmap() const;
 
-    const QPixmap &AmmoPixmap() const;
-
     const QPixmap &TiledStartPixmap() const;
     const QPixmap &TiledEndPixmap() const;
 
@@ -31,12 +29,17 @@ public:
     const QPixmap &TiledOutlawEnemyPixmap() const;
     const QPixmap &TiledKatanamenEnemyPixmap() const;
 
+    const QPixmap &AmmoAcidPixmap() const;
+    const QPixmap &AmmoIcePixmap() const;
+    const QPixmap &AmmoStonePixmap() const;
+
     QSize GameViewSize() const;
     int TileSize() const;
 
 private:
     QSize mp_GameViewSize;
     int mp_TileSize;
+    int mp_AmmoSize;
 
     // Tiled Towers
     mutable QPixmap mp_TiledTreeTowerPixmap;
@@ -46,7 +49,9 @@ private:
     mutable QPixmap mp_TiledSuperiorTowerPixmap;
 
     // Ammo
-    mutable QPixmap mp_AmmoPixmap;
+    mutable QPixmap mp_AmmoAcidPixmap;
+    mutable QPixmap mp_AmmoIcePixmap;
+    mutable QPixmap mp_AmmoStonePixmap;
 
     // Ends
     mutable QPixmap mp_TiledStartPixmap;
@@ -61,7 +66,8 @@ private:
     GeneralUtils(const GeneralUtils& Other) = delete;
     GeneralUtils& operator=(const GeneralUtils& Other) = delete;
 
-    const QPixmap &GetTiledBitmap(QPixmap &CachedPixMap, const QString &Path) const;
+    const QPixmap &getTiledBitmap(QPixmap &CachedPixMap, const QString &Path) const;
+    const QPixmap &getAmmoBitmap(QPixmap &CachedPixMap, const QString &Path) const;
 
 };
 

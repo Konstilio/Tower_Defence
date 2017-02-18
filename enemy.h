@@ -63,30 +63,36 @@ public:
 class OutcastEnemy : public Enemy
 {
 public:
-    OutcastEnemy(QGraphicsItem *Parent = 0);
 
     int getBonus() const override;
     int getSpeed()  const override;
+
+private:
+    friend class EnemyFactory;
+    OutcastEnemy(QGraphicsItem *Parent = 0);
 
 };
 
 class OutlawEnemy : public Enemy
 {
 public:
-    OutlawEnemy(QGraphicsItem *Parent = 0);
-
     int getBonus() const override;
     int getSpeed()  const override;
 
+private:
+    friend class EnemyFactory;
+    OutlawEnemy(QGraphicsItem *Parent = 0);
 };
 
 class KatanamenEnemy : public Enemy
 {
 public:
-    KatanamenEnemy(QGraphicsItem *Parent = 0);
-
     int getBonus() const override;
     int getSpeed()  const override;
+
+private:
+    friend class EnemyFactory;
+    KatanamenEnemy(QGraphicsItem *Parent = 0);
 };
 
 #endif // ENEMY_H

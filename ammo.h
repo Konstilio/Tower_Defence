@@ -14,8 +14,6 @@ public:
     // For Qt purposes
     enum { Type = UserType + ECustomItemRole_Ammo };
 
-    Ammo(Tower *TowerItem, Enemy *Target, QGraphicsItem *Parent = 0);
-
     int getPower() const;
     const QPointF &getStartPos() const;
     int getRange() const;
@@ -27,13 +25,14 @@ public:
     int type() const;
 
 private:
+    friend class Tower;
+    Ammo(Tower *TowerItem, Enemy *Target);
+
     // Tower that made shot
     Tower *mp_Tower;
-
     int mp_Power;
     QPointF mp_StartPos;
     int mp_Range;
-
     Enemy *mp_Target;
 
     constexpr static int mcp_Step = 8;

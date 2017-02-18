@@ -5,6 +5,7 @@
 #include "generalutils.h"
 
 class Enemy;
+class Ammo;
 
 class Tower : public QObject, public QGraphicsPixmapItem
 {
@@ -31,6 +32,7 @@ public:
     enum { Type = UserType + ECustomItemRole_Tower };
 
     Tower(QGraphicsItem *Parent = 0);
+
     void InitRange();
     void Indicate(EIndicator Indicator);
     void ClearIndicator();
@@ -56,6 +58,8 @@ public:
     QPointF Center() const;
     qreal getRangeRadius() const;
 
+    virtual Ammo *ShootAmmo();
+
 protected:
     QGraphicsEllipseItem *mp_RangeCircle = nullptr;
     int mp_ShootTicks = 0;
@@ -80,55 +84,58 @@ public:
 
 class TreeTower : public Tower
 {
-private:
-    friend class TowerFactory;
-    TreeTower(QGraphicsItem *Parent = 0);
-
 public:
 
     int getCost()  const override;
     int getShootTicks() const override;
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
+
+private:
+    friend class TowerFactory;
+    TreeTower(QGraphicsItem *Parent = 0);
 };
 
 class AcidTower : public Tower
 {
-private:
-    friend class TowerFactory;
-    AcidTower(QGraphicsItem *Parent = 0);
-
 public:
     int getCost()  const override;
     int getShootTicks() const override;
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
+
+    Ammo *ShootAmmo() override;
+private:
+    friend class TowerFactory;
+    AcidTower(QGraphicsItem *Parent = 0);
 };
 
 class IceTower : public Tower
 {
-private:
-    friend class TowerFactory;
-    IceTower(QGraphicsItem *Parent = 0);
-
 public:
     int getCost()  const override;
     int getShootTicks() const override;
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
+
+    Ammo *ShootAmmo() override;
+private:
+    friend class TowerFactory;
+    IceTower(QGraphicsItem *Parent = 0);
 };
 
 class StoneTower : public Tower
 {
-private:
-    friend class TowerFactory;
-    StoneTower(QGraphicsItem *Parent = 0);
-
 public:
     int getCost()  const override;
     int getShootTicks() const override;
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
+
+    Ammo *ShootAmmo() override;
+private:
+    friend class TowerFactory;
+    StoneTower(QGraphicsItem *Parent = 0);
 };
 
 
