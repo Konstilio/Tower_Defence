@@ -6,6 +6,7 @@ class GameView;
 class UserStatusWidget;
 class UserBuildMenuWidget;
 class ItemInfoWidget;
+class GameStateWidget;
 
 namespace Ui {
 class Widget;
@@ -26,6 +27,7 @@ private:
     UserStatusWidget *mp_StatusWidget;
     UserBuildMenuWidget *mp_BuildMenuWidget;
     ItemInfoWidget *mp_ItemInfoWidget;
+    GameStateWidget *mp_GameStateWidget;
 
 };
 

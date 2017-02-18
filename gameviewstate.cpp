@@ -11,7 +11,12 @@ GameViewState::GameViewState(GameView *View, GameScene *Scene, QObject *Parent)
     , mp_View(View)
     , mp_Scene(Scene)
 {
+    
+}
 
+void GameViewState::SetScene(GameScene *Scene)
+{   
+    mp_Scene = Scene;
 }
 
 // NormalViewState
@@ -178,7 +183,10 @@ void BuildViewState::onEnter()
 void BuildViewState::onExit()
 {
     if (!mp_WantBuild)
+    {
         mp_Scene->RemoveTempItem(mp_Tower);
+        delete mp_Tower;
+    }
     else
     {
         mp_Scene->BuildTower(mp_Tower);

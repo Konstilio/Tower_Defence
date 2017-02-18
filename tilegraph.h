@@ -42,6 +42,7 @@ struct ShortestPathResult;
 class TileGraph
 {
 public:
+    TileGraph() = default;
     TileGraph(int TilesWidth, int TilesHeight);
 
     Tile &getTile(const QPoint &TilePos);

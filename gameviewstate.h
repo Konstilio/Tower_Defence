@@ -13,13 +13,16 @@ class GameViewState : public QObject
     Q_OBJECT
 public:
     GameViewState(GameView *View, GameScene *Scene, QObject *Parent = 0);
-
+    void SetScene(GameScene *Scene);
+    
     void virtual mouseMoveEvent(QMouseEvent *event) = 0;
     void virtual leaveEvent() = 0;
     void virtual mousePressEvent(QMouseEvent *event) = 0;
 
     void virtual onEnter() = 0;
     void virtual onExit() = 0;
+
+    void virtual onSceneUpdated() = 0;
 
 protected:
     GameView *mp_View;
@@ -38,11 +41,12 @@ public:
     void onEnter() override;
     void onExit() override;
 
+    void onSceneUpdated() override;
 public slots:
     void UpgradeRequested();
     void SellRequested();
     void onLevelChanged();
-    void onSceneUpdated();
+
 
 signals:
     void TowerSelected(bool);
@@ -51,9 +55,10 @@ signals:
     void SelectionCleared();
 
 private:
+    void ClearSelected();
+
     QPointer<Tower> mp_SelectedTower;
     QPointer<Enemy> mp_SelectedEnemy;
-    void ClearSelected();
 };
 
 class BuildViewState : public GameViewState
@@ -69,17 +74,13 @@ public:
     void onExit() override;
 
     void AttachTower(Tower *TowerItem);
-
-public slots:
-    void onSceneUpdated();
-
+    void onSceneUpdated() override;
 signals:
     void WantLeave();
     void TowerAttached(QPointer<Tower> TowerItem);
     void AttachedTowerCleared();
 
 private:
-
     Tower *mp_Tower = nullptr;
     bool mp_WantBuild = false;
     bool mp_CanBuild = false;

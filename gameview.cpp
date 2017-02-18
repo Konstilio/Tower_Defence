@@ -46,28 +46,54 @@ GameView::GameView(QWidget *Parent)
     connect(mp_BuildState, &BuildViewState::WantLeave, this, &GameView::ChangeStateToNormal);
     connect(mp_BuildState, &BuildViewState::TowerAttached, this, &GameView::TowerAttached);
     connect(mp_BuildState, &BuildViewState::AttachedTowerCleared, this, &GameView::AttachedTowerCleared);
-    connect(mp_Scene, &GameScene::SceneUpdated, mp_BuildState, &BuildViewState::onSceneUpdated);
-    connect(mp_Scene, &GameScene::SceneUpdated, mp_NormalState, &NormalViewState::onSceneUpdated);
+    connect(mp_Scene, &GameScene::SceneUpdated, this, &GameView::onSceneUpdated);
     connect(mp_Scene, &GameScene::LevelChanged, this, &GameView::LevelChanged, Qt::QueuedConnection);
-    mp_Scene->StartGame();
+}
 
+void GameView::Start()
+{
+    if (mp_State)
+        mp_State->onExit();
+    setEnabled(true);
+
+    mp_Scene->StartGame();
     mp_State = mp_NormalState;
-    mp_State->onEnter();        
+    mp_State->onEnter();
+}
+
+void GameView::Pause()
+{
+    if (mp_State)
+        mp_State->onExit();
+
+    setDisabled(true);
+    mp_Scene->PauseGame();
+}
+
+void GameView::Resume()
+{
+    mp_State = mp_NormalState;
+    mp_State->onEnter();
+    setEnabled(true);
+    mp_Scene->ResumeGame();
 }
 
 void GameView::mouseMoveEvent(QMouseEvent *event)
 {
-    mp_State->mouseMoveEvent(event);
+    if (mp_State)
+        mp_State->mouseMoveEvent(event);
 }
 
 void GameView::leaveEvent(QEvent *event)
 {
-    mp_State->leaveEvent();
+    if (mp_State)
+        mp_State->leaveEvent();
 }
 
 void GameView::mousePressEvent(QMouseEvent *event)
 {
-    mp_State->mousePressEvent(event);
+    if (mp_State)
+        mp_State->mousePressEvent(event);
 }
 
 void GameView::wheelEvent(QWheelEvent *event)
@@ -99,9 +125,16 @@ void GameView::BuildWanted(int towerId)
     ChangeState(mp_BuildState);
 }
 
+void GameView::onSceneUpdated()
+{
+    if (mp_State)
+        mp_State->onSceneUpdated();
+}
+
 void GameView::ChangeState(GameViewState *State)
 {
-    mp_State->onExit();
+    if (mp_State)
+        mp_State->onExit();
     mp_State = State;
     mp_State->onEnter();
 }

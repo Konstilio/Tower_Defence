@@ -26,6 +26,11 @@ public:
 
 public slots:
     void BuildWanted(int towerId);
+    void onSceneUpdated();
+    
+    void Start();
+    void Pause();
+    void Resume();
 
 signals:
     void TowerSelected(bool);
@@ -43,8 +48,8 @@ private:
     void ChangeState(GameViewState *State);
     void ChangeStateToNormal();
 
-    GameScene *mp_Scene;
-    GameViewState *mp_State;
+    GameScene *mp_Scene = nullptr;
+    GameViewState *mp_State = nullptr;
 
     double mp_CurrentZoom;
 

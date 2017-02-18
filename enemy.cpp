@@ -4,6 +4,7 @@
 #include <qmath.h>
 #include <cmath>
 #include <QLineF>
+#include <QDebug>
 
 // Enemy
 
@@ -11,6 +12,13 @@ Enemy::Enemy(QGraphicsItem *Parent)
     : QObject(), QGraphicsPixmapItem(Parent)
 {
 
+}
+
+Enemy::~Enemy()
+{
+ #ifdef QT_DEBUG
+    qDebug() << "~Enemy()";
+#endif
 }
 
 // Needed For QT

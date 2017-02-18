@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     tilegraph.cpp \
     enemy.cpp \
     level.cpp \
-    iteminfowidget.cpp
+    iteminfowidget.cpp \
+    gamestatewidget.cpp
 
 HEADERS  += widget.h \
     gameview.h \
@@ -53,12 +54,14 @@ HEADERS  += widget.h \
     tilegraph.h \
     enemy.h \
     level.h \
-    iteminfowidget.h
+    iteminfowidget.h \
+    gamestatewidget.h
 
 FORMS    += widget.ui \
     userstatuswidget.ui \
     userbuildmenuwidget.ui \
-    iteminfowidget.ui
+    iteminfowidget.ui \
+    gamestatewidget.ui
 
 RESOURCES += \
     resources.qrc

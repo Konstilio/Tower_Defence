@@ -18,6 +18,7 @@ class GameScene : public QGraphicsScene
     Q_OBJECT
 public:
     GameScene(int Width, int Height, int TileSize, QObject *Parent = Q_NULLPTR);
+    ~GameScene();
 
     QPoint mapGlobalToTile(const QPointF &GloalPos) const;
     QPointF mapTileToGlobal(const QPoint &TilePos) const;
@@ -36,15 +37,16 @@ public:
     void BuildTower(Tower *TowerItem);
 
 
-public slots:
     void StartGame();
+    void PauseGame();
+    void ResumeGame();
 
 signals:
     void SceneUpdated();
     void LevelChanged(QPointer<Level> CurrentLevel);
 
 private:
-    void InitUpdateTimer();
+    void ResetUpdateTimer();
     void InitEndPoints();
 
 // Update
@@ -78,13 +80,14 @@ private:
     int mp_TilesHeight;
 
     QTimer *mp_UpdateTimer = nullptr;
+    static constexpr int mpc_UpdateTimerInterval = 40;
 
-    // Cashes
-    QList<QGraphicsLineItem *> mp_MeshLines;
+    // Caches
     QSet<Tower *> mp_Towers;
     QSet<Ammo *> mp_Ammos;
     QSet<Enemy *> mp_Enemies;
     QHash<QPoint, QSet<Tower *>> mp_PoseToTowerRange;
+    void ResetCache();
 
     // Graph 
     Tile *mp_TempTile = nullptr;

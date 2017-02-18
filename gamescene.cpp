@@ -15,9 +15,13 @@ GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     , mp_Height(Height)
     , mp_TilesWidth(mp_Width / mp_TileSize)
     , mp_TilesHeight (mp_Height / mp_TileSize)
-    , mp_Graph(mp_TilesWidth, mp_TilesHeight)
 {
     setSceneRect(0, 0, Width, Height);
+}
+
+GameScene::~GameScene()
+{
+    clear();
 }
 
 QPoint GameScene::mapGlobalToTile(const QPointF &GloalPos) const
@@ -37,15 +41,33 @@ QPointF GameScene::mapTileToGlobalCenter(const QPoint &TilePos) const
 
 void GameScene::StartGame()
 {
+    clear();
+    ResetCache();
+
+    // Reset Level
+    delete mp_Level;
     mp_Level = new Level(this);
+
+    // Reset Graph
+    mp_Graph = TileGraph(mp_TilesWidth, mp_TilesHeight);
 
     InitEndPoints();
     InitMesh();
-    InitUpdateTimer();
+    ResetUpdateTimer();
 
     mp_PathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
 
     emit LevelChanged(mp_Level);
+}
+
+void GameScene::PauseGame()
+{
+    mp_UpdateTimer->stop();
+}
+
+void GameScene::ResumeGame()
+{
+    mp_UpdateTimer->start(mpc_UpdateTimerInterval);
 }
 
 void GameScene::AddTempGameItem(QGraphicsItem *Item, QPoint TilePos)
@@ -101,9 +123,8 @@ void GameScene::InitMesh()
     {
         for (int xMesh = 0; xMesh < MeshWidth; ++xMesh)
         {
-            qDebug() << xMesh * mp_TileSize << ' ' << yMesh * mp_TileSize;
-            mp_MeshLines.append(addLine(xMesh * mp_TileSize, yMesh * mp_TileSize , (xMesh + 1) * mp_TileSize, yMesh * mp_TileSize, QPen(QColor(255, 255, 255, 30))));
-            mp_MeshLines.append(addLine(xMesh * mp_TileSize, yMesh * mp_TileSize , xMesh * mp_TileSize, (yMesh + 1) * mp_TileSize, QPen(QColor(255, 255, 255, 30))));
+            addLine(xMesh * mp_TileSize, yMesh * mp_TileSize , (xMesh + 1) * mp_TileSize, yMesh * mp_TileSize, QPen(QColor(255, 255, 255, 30)));
+            addLine(xMesh * mp_TileSize, yMesh * mp_TileSize , xMesh * mp_TileSize, (yMesh + 1) * mp_TileSize, QPen(QColor(255, 255, 255, 30)));
         }
     }
 }
@@ -249,6 +270,14 @@ void GameScene::Update()
 
 }
 
+void GameScene::ResetCache()
+{
+    mp_Towers.clear();
+    mp_Ammos.clear();
+    mp_Enemies.clear();
+    mp_PoseToTowerRange.clear();
+}
+
 int GameScene::IncUpdateSignal()
 {
     int Result = --mp_UpdateSignalTicks;
@@ -257,17 +286,18 @@ int GameScene::IncUpdateSignal()
     return Result;
 }
 
-void GameScene::InitUpdateTimer()
+void GameScene::ResetUpdateTimer()
 {
+    delete mp_UpdateTimer;
     mp_UpdateTimer = new QTimer(this);
     connect(mp_UpdateTimer, &QTimer::timeout, this, &GameScene::Update);
-    mp_UpdateTimer->start(40);
+    mp_UpdateTimer->start(mpc_UpdateTimerInterval);
 }
 
 void GameScene::InitEndPoints()
 {
     // Start
-    QGraphicsPixmapItem *StartItem = new QGraphicsPixmapItem(GeneralUtils::Instance().TiledStartPixmap());
+    auto *StartItem = new QGraphicsPixmapItem(GeneralUtils::Instance().TiledStartPixmap());
     addItem(StartItem);
     mp_StartTilePos = QPoint(0,0);
     mp_StartGlobalPos = mapTileToGlobal(mp_StartTilePos);
@@ -276,12 +306,12 @@ void GameScene::InitEndPoints()
     mp_Graph.getTile(mp_StartTilePos).setType(Tile::EType_Start);
 
     // End
-    QGraphicsPixmapItem *EndItem = new QGraphicsPixmapItem(GeneralUtils::Instance().TiledEndPixmap());
-    addItem(EndItem);
+    auto *EndTime = new QGraphicsPixmapItem(GeneralUtils::Instance().TiledEndPixmap());
+    addItem(EndTime);
     mp_EndTilePos = QPoint(mp_TilesWidth - 1, mp_TilesHeight - 1);
     mp_EndGlobalPos = mapTileToGlobal(mp_EndTilePos);
-    EndItem->setX(mp_EndGlobalPos.x());
-    EndItem->setY(mp_EndGlobalPos.y());
+    EndTime->setX(mp_EndGlobalPos.x());
+    EndTime->setY(mp_EndGlobalPos.y());
     mp_Graph.getTile(mp_EndTilePos).setType(Tile::EType_End);
 }
 
