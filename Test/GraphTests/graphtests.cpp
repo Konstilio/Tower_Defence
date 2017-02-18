@@ -38,6 +38,8 @@ void GraphTests::TestClearPath()
 
     const Tile& T5 = Graph.getTile(0, 0);
     QCOMPARE(Result.m_Distance[Graph.getTileIndex(&T5)], 8);
+
+    QCOMPARE(Graph.AllPathesExists(Result), true);
 }
 
 void GraphTests::TestBusyPath()
@@ -64,6 +66,8 @@ void GraphTests::TestBusyPath()
 
     const Tile& T5 = Graph.getTile(0, 0);
     QCOMPARE(Result.m_Distance[Graph.getTileIndex(&T5)], std::numeric_limits<int>::max());
+
+    QCOMPARE(Graph.AllPathesExists(Result), false);
 }
 
 void GraphTests::TestHalfBusyPath()
@@ -94,5 +98,19 @@ void GraphTests::TestHalfBusyPath()
     const Tile& T5 = Graph.getTile(0, 0);
     QCOMPARE(Result.m_Distance[Graph.getTileIndex(&T5)], std::numeric_limits<int>::max());
     QCOMPARE(Result.m_Next[Graph.getTileIndex(&T5)], static_cast<const Tile *>(nullptr));
+
+    QCOMPARE(Graph.AllPathesExists(Result), false);
+}
+
+void GraphTests::TestPathExists()
+{
+    TileGraph Graph(5, 5);
+    Graph.getTile(4, 0).setType(Tile::EType_Busy);
+    Graph.getTile(3, 1).setType(Tile::EType_Busy);
+    Graph.getTile(2, 2).setType(Tile::EType_Busy);
+    Graph.getTile(1, 3).setType(Tile::EType_Busy);
+    ShortestPathResult Result = DijkstraSearch()(Graph, 4, 4);
+
+    QCOMPARE(Graph.AllPathesExists(Result), true);
 }
 

@@ -17,7 +17,7 @@ void Tower::InitRange()
     int RectSize = boundingRect().width();
     qreal Radius = getRange() * RectSize;
     qreal Size = (2 * getRange() + 1) * RectSize;
-    mp_RangeCircle = new QGraphicsEllipseItem(x() - Radius, y() - Radius, Size, Size, this);
+    mp_RangeCircle = new QGraphicsEllipseItem(-Radius, -Radius, Size, Size, this);
     mp_RangeCircle->setPen(QPen(CanShoot() ? QColor(255, 255, 255, 200) : QColor(0, 0, 0, 0)));
     mp_RangeRadius = mp_RangeCircle->boundingRect().width() / 2;
 }
@@ -85,14 +85,29 @@ void Tower::ReleaseTarget()
     mp_HaveTarget = false;
 }
 
-QList<QGraphicsItem *> Tower::TowerCollidingItems()
+void Tower::Upgrade()
 {
-    return collidingItems();
+    delete mp_RangeCircle;
+
+    setPixmap(GeneralUtils::Instance().TiledSuperiorTowerPixmap());
+    mp_Range = 3;
+    mp_Power = 6;
+    InitRange();
 }
 
-QList<QGraphicsItem *> Tower::RangeCollidingItems()
+int Tower::getRange() const
 {
-    return mp_RangeCircle->collidingItems();
+    return mp_Range;
+}
+
+int Tower::getPower() const
+{
+    return mp_Power;
+}
+
+int Tower::getUpgradeCost() const
+{
+    return 100;
 }
 
 int Tower::type() const
@@ -117,13 +132,13 @@ qreal Tower::getRangeRadius() const
 Tower *TowerFactory::Create(int towerId)
 {
     Tower *Result = nullptr;
-    if (towerId == TreeTower::getId())
+    if (towerId == Tower::ETowerId_Tree)
         Result = new TreeTower();
-    else if (towerId == AcidTower::getId())
+    else if (towerId == Tower::ETowerId_Acid)
         Result = new AcidTower();
-    else if (towerId == IceTower::getId())
+    else if (towerId == Tower::ETowerId_Ice)
         Result = new IceTower();
-    else if (towerId == StoneTower::getId())
+    else if (towerId == Tower::ETowerId_Stone)
         Result = new StoneTower();
     else
         Q_ASSERT(false);
@@ -141,16 +156,6 @@ TreeTower::TreeTower(QGraphicsItem *Parent)
     setPixmap(GeneralUtils::Instance().TiledTreeTowerPixmap());
 }
 
-int TreeTower::getRange() const
-{
-    return 1;
-}
-
-int TreeTower::getPower() const
-{
-    return 1;
-}
-
 int TreeTower::getCost() const
 {
     return 5;
@@ -166,9 +171,9 @@ bool TreeTower::CanShoot() const
     return false;
 }
 
-int TreeTower::getId()
+bool TreeTower::CanBeUpgraded() const
 {
-    return 1;
+    return false;
 }
 
 // AcidTower
@@ -177,16 +182,8 @@ AcidTower::AcidTower(QGraphicsItem *Parent)
     : Tower(Parent)
 {
     setPixmap(GeneralUtils::Instance().TiledAcidTowerPixmap());
-}
-
-int AcidTower::getRange() const
-{
-    return 2;
-}
-
-int AcidTower::getPower() const
-{
-    return 1;
+    mp_Range = 2;
+    mp_Power = 1;
 }
 
 int AcidTower::getCost() const
@@ -204,9 +201,9 @@ bool AcidTower::CanShoot() const
     return true;
 }
 
-int AcidTower::getId()
+bool AcidTower::CanBeUpgraded() const
 {
-    return 2;
+    return true;
 }
 
 // IceTower
@@ -215,16 +212,8 @@ IceTower::IceTower(QGraphicsItem *Parent)
     : Tower(Parent)
 {
     setPixmap(GeneralUtils::Instance().TiledIceTowerPixmap());
-}
-
-int IceTower::getRange() const
-{
-    return 2;
-}
-
-int IceTower::getPower() const
-{
-    return 2;
+    mp_Range = 2;
+    mp_Power = 2;
 }
 
 int IceTower::getCost() const
@@ -242,9 +231,9 @@ bool IceTower::CanShoot() const
     return true;
 }
 
-int IceTower::getId()
+bool IceTower::CanBeUpgraded() const
 {
-    return 3;
+    return true;
 }
 
 // StoneTower
@@ -253,16 +242,8 @@ StoneTower::StoneTower(QGraphicsItem *Parent)
     : Tower(Parent)
 {
     setPixmap(GeneralUtils::Instance().TiledStoneTowerPixmap());
-}
-
-int StoneTower::getRange() const
-{
-    return 2;
-}
-
-int StoneTower::getPower() const
-{
-    return 3;
+    mp_Range = 2;
+    mp_Power = 3;
 }
 
 int StoneTower::getCost() const
@@ -280,7 +261,7 @@ bool StoneTower::CanShoot() const
     return true;
 }
 
-int StoneTower::getId()
+bool StoneTower::CanBeUpgraded() const
 {
-    return 4;
+    return true;
 }

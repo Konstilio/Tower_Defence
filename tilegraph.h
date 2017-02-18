@@ -3,10 +3,8 @@
 
 #include <QHash>
 #include <QPoint>
-#include <QVector>
 #include <QSet>
-
-#include <functional>
+#include <vector> // not QVector to support move
 
 inline uint qHash (const QPoint & key)
 {
@@ -45,7 +43,6 @@ class TileGraph
 {
 public:
     TileGraph(int TilesWidth, int TilesHeight);
-    ~TileGraph();
 
     Tile &getTile(const QPoint &TilePos);
     const Tile &getTile(const QPoint & TilePos) const;
@@ -54,24 +51,24 @@ public:
 
     int static MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile);
     void getLogicNeighbours(const Tile& Current, int Distance, QSet<const Tile *> &o_Result) const; // 9 Neighbours (include itself, if distance 1)
-    QVector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
+    std::vector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
 
-    void ForEachTile(std::function<void(const Tile *)> &&TileFunc) const;
     int getTileIndex(const Tile *CurrentTile) const;
     int getSize() const;
 
-    QPoint getNextPathPoint(const QPoint &TilePos, ShortestPathResult const &Result);
-    int getPathDistance(const QPoint &TilePos, ShortestPathResult const &Result);
+    QPoint getNextPathPoint(const QPoint &TilePos, ShortestPathResult const &Result) const;
+    int getPathDistance(const QPoint &TilePos, ShortestPathResult const &Result) const;
+    bool AllPathesExists(ShortestPathResult const &Result) const;
 private:
     int mp_TilesWidth;
     int mp_TilesHeight;
-    QVector<Tile *> mp_Tiles;
+    std::vector<Tile> mp_Tiles;
 };
 
 struct ShortestPathResult
 {
-    QVector<int> m_Distance;
-    QVector<const Tile *> m_Next;
+    std::vector<int> m_Distance;
+    std::vector<const Tile *> m_Next;
     const Tile *m_Destination = nullptr;
 };
 

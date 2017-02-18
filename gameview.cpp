@@ -35,7 +35,9 @@ GameView::GameView(QWidget *Parent)
     mp_NormalState = new NormalViewState(this, mp_Scene, this);
     mp_BuildState = new BuildViewState(this, mp_Scene, this);
 
-    connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::changeStateToNormal);
+    connect(this, &GameView::UpgradeWanted, mp_NormalState, &NormalViewState::UpgradeRequested);
+    connect(mp_NormalState, &NormalViewState::TowerSelected, this, &GameView::TowerSelected);
+    connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::ChangeStateToNormal);
     connect(mp_Scene, &GameScene::SceneUpdated, mp_BuildState, &BuildViewState::onSceneUpdated);
     connect(mp_Scene, &GameScene::LevelChanged, this, &GameView::LevelChanged, Qt::QueuedConnection);
     mp_Scene->StartGame();
@@ -82,20 +84,20 @@ void GameView::wheelEvent(QWheelEvent *event)
 //    }
 }
 
-void GameView::buildWanted(int towerId)
+void GameView::BuildWanted(int towerId)
 {
     mp_BuildState->AttachTower(TowerFactory::Create(towerId));
-    changeState(mp_BuildState);
+    ChangeState(mp_BuildState);
 }
 
-void GameView::changeState(GameViewState *State)
+void GameView::ChangeState(GameViewState *State)
 {
     mp_State->onExit();
     mp_State = State;
     mp_State->onEnter();
 }
 
-void GameView::changeStateToNormal()
+void GameView::ChangeStateToNormal()
 {
-    changeState(mp_NormalState);
+    ChangeState(mp_NormalState);
 }

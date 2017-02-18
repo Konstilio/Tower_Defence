@@ -14,7 +14,7 @@ public:
 
     // User
     int getLifes() const;
-    void IncLifes();
+    void IncLifes(int Lifes);
     int getCosts() const;
     void AddCosts(int costs);
     void ReduceCosts(int costs);
@@ -31,7 +31,7 @@ private:
 
     // User
     int mp_Lifes = 20;
-    int mp_Costs = 100;
+    int mp_Costs = 1000;
 
     // General
     int mp_LevelNumber = 1;

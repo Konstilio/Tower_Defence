@@ -24,9 +24,9 @@ int Level::getLifes() const
     return mp_Lifes;
 }
 
-void Level::IncLifes()
+void Level::IncLifes(int Lifes)
 {
-    --mp_Lifes;
+    mp_Lifes -= Lifes;
 }
 
 int Level::getCosts() const

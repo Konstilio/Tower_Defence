@@ -20,6 +20,7 @@ public:
     const QPixmap &TiledAcidTowerPixmap() const;
     const QPixmap &TiledIceTowerPixmap() const;
     const QPixmap &TiledStoneTowerPixmap() const;
+    const QPixmap &TiledSuperiorTowerPixmap() const;
 
     const QPixmap &AmmoPixmap() const;
 
@@ -42,6 +43,7 @@ private:
     mutable QPixmap mp_TiledAcidTowerPixmap;
     mutable QPixmap mp_TiledIceTowerPixmap;
     mutable QPixmap mp_TiledStoneTowerPixmap;
+    mutable QPixmap mp_TiledSuperiorTowerPixmap;
 
     // Ammo
     mutable QPixmap mp_AmmoPixmap;

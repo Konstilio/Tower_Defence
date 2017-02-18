@@ -47,20 +47,11 @@ TileGraph::TileGraph(int TilesWidth, int TilesHeight)
     : mp_TilesWidth(TilesWidth)
     , mp_TilesHeight(TilesHeight)
 {
-    mp_Tiles.resize(mp_TilesWidth * mp_TilesHeight);
-    for (int iWidth = 0; iWidth < TilesWidth; ++iWidth)
+    mp_Tiles.reserve(mp_TilesWidth * mp_TilesHeight);
+    for (int iHeight = 0; iHeight < TilesHeight; ++iHeight)
     {
-        for (int iHeight = 0; iHeight < TilesHeight; ++iHeight)
-            mp_Tiles[iHeight * mp_TilesWidth + iWidth] = new Tile(iWidth, iHeight);
-    }
-}
-
-TileGraph::~TileGraph()
-{
-    for (auto iTile = mp_Tiles.begin(); iTile != mp_Tiles.end(); ++iTile)
-    {
-        delete (*iTile);
-        *iTile = nullptr;
+        for (int iWidth = 0; iWidth < TilesWidth; ++iWidth)
+            mp_Tiles.push_back(Tile(iWidth, iHeight));
     }
 }
 
@@ -76,12 +67,12 @@ const Tile &TileGraph::getTile(const QPoint &TilePos) const
 
 Tile &TileGraph::getTile(int X, int Y)
 {
-    return *mp_Tiles[Y * mp_TilesWidth + X];
+    return mp_Tiles[Y * mp_TilesWidth + X];
 }
 
 const Tile &TileGraph::getTile(int X, int Y) const
 {
-    return *mp_Tiles[Y * mp_TilesWidth + X];
+    return mp_Tiles[Y * mp_TilesWidth + X];
 }
 
 int TileGraph::MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile)
@@ -89,9 +80,9 @@ int TileGraph::MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile)
     return qMax(qAbs(LeftTile.x() - RightTile.x()), qAbs(LeftTile.y() - RightTile.y()));
 }
 
-QVector<const Tile *> TileGraph::getPathNeighbours(const Tile &Current) const
+std::vector<const Tile *> TileGraph::getPathNeighbours(const Tile &Current) const
 {
-    QVector<const Tile *> Result;
+    std::vector<const Tile *> Result;
     Result.reserve(4);
     if (Current.getX() > 0)
         Result.push_back(&getTile({Current.getX() - 1, Current.getY()}));
@@ -125,12 +116,6 @@ void TileGraph::getLogicNeighbours(const Tile &Current, int Distance, QSet<const
     }
 }
 
-void TileGraph::ForEachTile(std::function<void (const Tile *)> &&TileFunc) const
-{
-    for (auto iTile = mp_Tiles.begin(); iTile != mp_Tiles.end(); ++iTile)
-        TileFunc(*iTile);
-}
-
 int TileGraph::getTileIndex(const Tile *CurrentTile) const
 {
     return CurrentTile->getY() * mp_TilesWidth + CurrentTile->getX();
@@ -141,7 +126,7 @@ int TileGraph::getSize() const
     return mp_TilesWidth * mp_TilesHeight;
 }
 
-QPoint TileGraph::getNextPathPoint(const QPoint &TilePos, const ShortestPathResult &Result)
+QPoint TileGraph::getNextPathPoint(const QPoint &TilePos, const ShortestPathResult &Result) const
 {
     const auto &CurrentTile = getTile(TilePos);
     const Tile *NextTile = Result.m_Next[getTileIndex(&CurrentTile)];
@@ -149,12 +134,34 @@ QPoint TileGraph::getNextPathPoint(const QPoint &TilePos, const ShortestPathResu
     return {NextTile->getX(), NextTile->getY()};
 }
 
-int TileGraph::getPathDistance(const QPoint &TilePos, const ShortestPathResult &Result)
+int TileGraph::getPathDistance(const QPoint &TilePos, const ShortestPathResult &Result) const
 {
     const auto &CurrentTile = getTile(TilePos);
     return Result.m_Distance[getTileIndex(&CurrentTile)];
 }
 
+bool TileGraph::AllPathesExists(const ShortestPathResult &Result) const
+{
+    for (auto const &TileItem : mp_Tiles)
+    {
+        if (TileItem.getType() != Tile::EType_Busy && TileItem.getType() != Tile::EType_Temp)
+        {
+            if (Result.m_Next[getTileIndex(&TileItem)] == nullptr)
+                return false;
+        }
+    }
+    return true;
+}
+
+// ShortestPathResult
+
+//ShortestPathResult &ShortestPathResult::operator=(ShortestPathResult &&Other)
+//{
+//    m_Destination = Other.m_Destination;
+//    Other.m_Destination = nullptr;
+//    m_Distance = std::move(Other.m_Distance);
+//    m_Next = std::move(Other.m_Next);
+//}
 
 // DijkstraSearch
 
@@ -165,8 +172,8 @@ ShortestPathResult DijkstraSearch::operator()(const TileGraph &Graph, int X, int
     DistanceMap.emplace(std::make_pair(0, Destination));
     
     ShortestPathResult Result;
-    Result.m_Distance = QVector<int>(Graph.getSize(), std::numeric_limits<int>::max());
-    Result.m_Next = QVector<const Tile *>(Graph.getSize(), nullptr);
+    Result.m_Distance = std::vector<int>(Graph.getSize(), std::numeric_limits<int>::max());
+    Result.m_Next = std::vector<const Tile *>(Graph.getSize(), nullptr);
 
     Result.m_Distance[Graph.getTileIndex(Destination)] = 0;
     Result.m_Next[Graph.getTileIndex(Destination)] = Destination;
@@ -180,7 +187,7 @@ ShortestPathResult DijkstraSearch::operator()(const TileGraph &Graph, int X, int
         const Tile *CurrentTile = it->second;
         DistanceMap.erase(it);
 
-        QVector<const Tile *> Neighbours = Graph.getPathNeighbours(*CurrentTile);
+        auto Neighbours = Graph.getPathNeighbours(*CurrentTile);
         for (const Tile * Neighbour : Neighbours)
         {
             if (Neighbour->getType() == Tile::EType_Busy || Neighbour->getType() == Tile::EType_Temp)

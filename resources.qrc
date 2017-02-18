@@ -11,5 +11,8 @@
         <file>Images/outlaw.png</file>
         <file>Images/royalkatanamen.png</file>
         <file>Images/starting.png</file>
+        <file>Images/upgrade.png</file>
+        <file>Images/superiortower.png</file>
+        <file>Images/eifel.png</file>
     </qresource>
 </RCC>

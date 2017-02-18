@@ -16,8 +16,12 @@ public:
     explicit UserBuildMenuWidget(QWidget *parent = 0);
     ~UserBuildMenuWidget();
 
+public slots:
+    void onTowerSelected();
+
 signals:
-    void buildWanted(int towerId);
+    void BuildWanted(int towerId);
+    void UpgradeWanted();
 
 private:
     Ui::UserBuildMenuWidget *ui;

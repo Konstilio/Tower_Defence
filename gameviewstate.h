@@ -37,6 +37,12 @@ public:
     void onEnter() override;
     void onExit() override;
 
+public slots:
+    void UpgradeRequested();
+
+signals:
+    void TowerSelected();
+
 private:
     Tower *mp_SelectedTower = nullptr;
     void ClearSelectedTower();
@@ -67,6 +73,8 @@ private:
     Tower *mp_Tower = nullptr;
     bool mp_Build = false;
     bool mp_CanBuild = false;
+
+    QPoint mp_PrevTilePos;
 };
 
 #endif // GAMEVIEWSTATE_H

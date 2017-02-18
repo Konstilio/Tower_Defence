@@ -14,7 +14,7 @@ GeneralUtils::GeneralUtils()
     else if (rec.width() >= 1000)
     {
          mp_GameViewSize = QSize(900, 600);
-         mp_TileSize = 25;
+         mp_TileSize = 30;
     }
     else
     {
@@ -47,6 +47,11 @@ const QPixmap &GeneralUtils::TiledIceTowerPixmap() const
 const QPixmap &GeneralUtils::TiledStoneTowerPixmap() const
 {
     return GetTiledBitmap(mp_TiledStoneTowerPixmap, ":/Images/stonetower.png");
+}
+
+const QPixmap &GeneralUtils::TiledSuperiorTowerPixmap() const
+{
+    return GetTiledBitmap(mp_TiledSuperiorTowerPixmap, ":/Images/superiortower.png");
 }
 
 const QPixmap &GeneralUtils::AmmoPixmap() const

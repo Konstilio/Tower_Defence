@@ -23,14 +23,14 @@ public:
     QPointF mapTileToGlobalCenter(const QPoint &TilePos) const;
 
     void AddTempGameItem(QGraphicsItem *Item, QPoint TilePos);
+    void RemoveTempItem(QGraphicsItem *Item);
 
+    // Towers
+    bool CanBuildTower(Tower *TowerItem) const;
+    void UpgradeTower(Tower *TowerItem);
     // Next functions assumes that tower already added to scene as temp object
     void BuildTower(Tower *TowerItem);
-    bool CanBuildTower(Tower *TowerItem) const;
 
-    // Mesh
-    void ShowMesh();
-    void HideMesh();
 
 public slots:
     void StartGame();
@@ -43,7 +43,9 @@ private:
     void InitUpdateTimer();
     void InitEndPoints();
 
+// Update
     // Tower updation
+    void UpdateTowerTargets();
     void UpdateTowerTargetOnEnemy(Enemy *EnemyItem);
     void TowerShoot(Tower *TowerItem);
 
@@ -51,10 +53,15 @@ private:
     void RemoveOutOfRangeAmmos();
     void AddEnemy();
     void UpdateAmmoEnemyCollisions();
+    void RemoveReachedEnemies();
     void MoveEnemies();
+//
 
     // Mesh
     void InitMesh();
+
+    // CacheUpdates
+    void UpdateTowerPosesCache(Tower *TowerItem, bool Add);
 
 private slots:
     void Update();
@@ -75,8 +82,11 @@ private:
     QSet<Enemy *> mp_Enemies;
     QHash<QPoint, QSet<Tower *>> mp_PoseToTowerRange;
 
+    // Graph 
+    Tile *mp_TempTile = nullptr;
     TileGraph mp_Graph;
-    ShortestPathResult mp_DijkstraResult;
+    ShortestPathResult mp_PathResult; // Path Result that doesn't consider temp Tiles
+    ShortestPathResult mp_TempPathResult; // Path Result that does consider temp Tiles
 
     QPointF mp_StartGlobalPos;
     QPointF mp_EndGlobalPos;

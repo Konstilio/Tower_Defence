@@ -23,14 +23,16 @@ public:
     void wheelEvent(QWheelEvent *event) override;
 
 public slots:
-    void buildWanted(int towerId);
+    void BuildWanted(int towerId);
 
 signals:
     void LevelChanged(Level *CurrentLevel);
+    void UpgradeWanted();
+    void TowerSelected();
 
 private:
-    void changeState(GameViewState *State);
-    void changeStateToNormal();
+    void ChangeState(GameViewState *State);
+    void ChangeStateToNormal();
 
     GameScene *mp_Scene;
     GameViewState *mp_State;

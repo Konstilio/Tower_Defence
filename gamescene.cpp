@@ -27,12 +27,25 @@ QPoint GameScene::mapGlobalToTile(const QPointF &GloalPos) const
 
 QPointF GameScene::mapTileToGlobal(const QPoint &TilePos) const
 {
-    return QPoint( TilePos.x() * mp_TileSize, TilePos.y() * mp_TileSize);
+    return QPointF( TilePos.x() * mp_TileSize, TilePos.y() * mp_TileSize);
 }
 
 QPointF GameScene::mapTileToGlobalCenter(const QPoint &TilePos) const
 {
-     return QPoint( TilePos.x() * mp_TileSize + mp_TileSize / 2, TilePos.y() * mp_TileSize + mp_TileSize / 2);
+     return QPointF( TilePos.x() * mp_TileSize + mp_TileSize / 2., TilePos.y() * mp_TileSize + mp_TileSize / 2.);
+}
+
+void GameScene::StartGame()
+{
+    mp_Level = new Level(this);
+
+    InitEndPoints();
+    InitMesh();
+    InitUpdateTimer();
+
+    mp_PathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+
+    emit LevelChanged(mp_Level);
 }
 
 void GameScene::AddTempGameItem(QGraphicsItem *Item, QPoint TilePos)
@@ -41,6 +54,24 @@ void GameScene::AddTempGameItem(QGraphicsItem *Item, QPoint TilePos)
     QPointF GlobalPos = mapTileToGlobal(TilePos);
     Item->setX(GlobalPos.x());
     Item->setY(GlobalPos.y());
+    Tile *TempTile = &mp_Graph.getTile(TilePos);
+    if (TempTile->getType() == Tile::EType_Empty)
+    {
+        TempTile->setType(Tile::EType_Temp);
+        mp_TempPathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+    }
+    mp_TempTile = TempTile;
+}
+
+void GameScene::RemoveTempItem(QGraphicsItem *Item)
+{
+    if (!mp_TempTile)
+        return;
+
+    removeItem(Item);
+    if (mp_TempTile->getType() == Tile::EType_Temp)
+        mp_TempTile->setType(Tile::EType_Empty);
+    mp_TempTile = nullptr;
 }
 
 void GameScene::InitMesh()
@@ -57,51 +88,42 @@ void GameScene::InitMesh()
             mp_MeshLines.append(addLine(xMesh * mp_TileSize, yMesh * mp_TileSize , xMesh * mp_TileSize, (yMesh + 1) * mp_TileSize, QPen(QColor(255, 255, 255, 30))));
         }
     }
-
-    HideMesh();
 }
 
-void GameScene::ShowMesh()
+void GameScene::UpdateTowerPosesCache(Tower *TowerItem, bool Add)
 {
-    for (auto *iMeshLine : mp_MeshLines)
-        iMeshLine->show();
-}
+    Q_ASSERT(mp_Towers.contains(TowerItem));
 
-void GameScene::HideMesh()
-{
-    //for (auto *iMeshLine : mp_MeshLines)
-    //iMeshLine->hide();
-}
-
-void GameScene::StartGame()
-{
-    mp_Level = new Level(this);
-
-    InitEndPoints();
-    InitMesh();
-    InitUpdateTimer();
-
-    mp_DijkstraResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
-
-    emit LevelChanged(mp_Level);
-}
-
-void GameScene::BuildTower(Tower *TowerItem)
-{
     QPoint TilePos = mapGlobalToTile(TowerItem->pos());
-
-    mp_Graph.getTile(TilePos).setType(Tile::EType_Busy);
-    mp_DijkstraResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
-
-    mp_Towers.insert(TowerItem);
-
     QSet<const Tile *> Neighbours;
     mp_Graph.getLogicNeighbours(TilePos, TowerItem->getRange(), Neighbours);
     for (const auto *Neighbour : Neighbours)
     {
         QPoint RangePoint(Neighbour->getX(), Neighbour->getY());
-        mp_PoseToTowerRange[RangePoint].insert(TowerItem);
+        if (Add)
+            mp_PoseToTowerRange[RangePoint].insert(TowerItem);
+        else
+            mp_PoseToTowerRange[RangePoint].remove(TowerItem);
     }
+}
+
+void GameScene::BuildTower(Tower *TowerItem)
+{
+#ifdef QT_DEBUG
+    QPoint TilePos = mapGlobalToTile(TowerItem->pos());
+    Q_ASSERT(mp_TempTile);
+    Tile *TowerTile = &mp_Graph.getTile(TilePos);
+    Q_ASSERT(TowerTile == mp_TempTile);
+#endif
+
+    mp_TempTile->setType(Tile::EType_Busy);
+    mp_TempTile = nullptr;
+
+    mp_PathResult = std::move(mp_TempPathResult);
+
+    mp_Towers.insert(TowerItem);
+
+    UpdateTowerPosesCache(TowerItem, true);
 
     mp_Level->ReduceCosts(TowerItem->getCost());
     emit LevelChanged(mp_Level);
@@ -117,7 +139,7 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
 
     // First check tiles
     QPoint TilePos = mapGlobalToTile(TowerItem->pos());
-    if (!(mp_Graph.getTile(TilePos).getType() == Tile::EType_Empty))
+    if (!(mp_Graph.getTile(TilePos).getType() == Tile::EType_Temp))
         return false;
 
     // Check Distance to ends
@@ -128,13 +150,37 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
     for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
     {
         QPoint EnemyTilePos = mapGlobalToTile((*iEnemy)->pos());
-        qDebug() << "EnemyTilePos:" << EnemyTilePos;
-        if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) <= 1)
+        if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) < 1)
             return false;
     }
 
+    if (!mp_Graph.AllPathesExists(mp_TempPathResult))
+        return false;
+
     qDebug() << "CanBuildTower() took " << timer.elapsed() << " ms " << "Enemies: " << mp_Enemies.size();
     return true;
+}
+
+void GameScene::UpgradeTower(Tower *TowerItem)
+{
+    if (mp_Level->getCosts() < TowerItem->getUpgradeCost())
+        return;
+
+    if (!mp_Towers.contains(TowerItem))
+        return;
+
+    // Remove old cache
+    UpdateTowerPosesCache(TowerItem, false);
+
+    QPointF Pos = TowerItem->pos();
+    TowerItem->Upgrade();
+    TowerItem->setPos(Pos);
+
+    // Add new cache
+    UpdateTowerPosesCache(TowerItem, true);
+
+    mp_Level->ReduceCosts(TowerItem->getUpgradeCost());
+    emit LevelChanged(mp_Level);
 }
 
 void GameScene::Update()
@@ -145,14 +191,8 @@ void GameScene::Update()
     AddEnemy();
     RemoveOutOfRangeAmmos();
     UpdateAmmoEnemyCollisions();
-
-    // Release Target
-    for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
-        (*iTower)->ReleaseTarget();
-
-    // Acquire Target for towers through enemies Cache
-    for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
-        UpdateTowerTargetOnEnemy((*iEnemy));
+    RemoveReachedEnemies();
+    UpdateTowerTargets();
 
     for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
          TowerShoot(*iTower);
@@ -171,7 +211,7 @@ void GameScene::InitUpdateTimer()
 {
     mp_UpdateTimer = new QTimer(this);
     connect(mp_UpdateTimer, &QTimer::timeout, this, &GameScene::Update);
-    mp_UpdateTimer->start(25);
+    mp_UpdateTimer->start(40);
 }
 
 void GameScene::InitEndPoints()
@@ -195,6 +235,17 @@ void GameScene::InitEndPoints()
     mp_Graph.getTile(mp_EndTilePos).setType(Tile::EType_End);
 }
 
+void GameScene::UpdateTowerTargets()
+{
+    // Release Targets
+    for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
+        (*iTower)->ReleaseTarget();
+
+    // Acquire Target for towers through enemies Cache
+    for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
+        UpdateTowerTargetOnEnemy((*iEnemy));
+}
+
 void GameScene::UpdateTowerTargetOnEnemy(Enemy *EnemyItem)
 {
     QPoint EnemyTilePos = mapGlobalToTile(EnemyItem->pos());
@@ -203,7 +254,7 @@ void GameScene::UpdateTowerTargetOnEnemy(Enemy *EnemyItem)
     {
         if (TowerItem->CanShoot() && !TowerItem->getHaveTarget())
         {
-            QLineF Line(TowerItem->pos(), EnemyItem->pos());
+            QLineF Line(TowerItem->Center(), EnemyItem->Center());
             if (Line.length() < TowerItem->getRangeRadius())
                 TowerItem->AqcuireTarget(EnemyItem);
         }
@@ -239,6 +290,7 @@ void GameScene::RemoveOutOfRangeAmmos()
         {
             auto iTemp = iAmmo++;
             removeItem(AmmoItem);
+            delete AmmoItem;
             mp_Ammos.erase(iTemp);
         }
         else
@@ -259,7 +311,7 @@ void GameScene::AddEnemy()
     EnemyItem->setX(mp_StartGlobalPos.x());
     EnemyItem->setY(mp_StartGlobalPos.y());
 
-    QPointF NextTarget = mapTileToGlobal(mp_Graph.getNextPathPoint(mp_StartTilePos, mp_DijkstraResult));
+    QPointF NextTarget = mapTileToGlobal(mp_Graph.getNextPathPoint(mp_StartTilePos, mp_PathResult));
     EnemyItem->setTargetPos(NextTarget);
 
     mp_Enemies.insert(EnemyItem);
@@ -273,6 +325,7 @@ void GameScene::UpdateAmmoEnemyCollisions()
         Ammo *AmmoItem = *AmmoIt;
         auto iTemp = AmmoIt++;
         removeItem(AmmoItem);
+        delete AmmoItem;
         mp_Ammos.erase(iTemp);
     };
 
@@ -305,6 +358,7 @@ void GameScene::UpdateAmmoEnemyCollisions()
                 removeItem(TargetEnemy);
                 mp_Enemies.erase(EnemyIt);
                 mp_Level->AddCosts(TargetEnemy->getBonus());
+                delete TargetEnemy;
                 emit LevelChanged(mp_Level);
             }
 
@@ -316,6 +370,36 @@ void GameScene::UpdateAmmoEnemyCollisions()
     }
 }
 
+void GameScene::RemoveReachedEnemies()
+{
+    int Reached = 0;
+    for (auto iEnemy = mp_Enemies.begin(); iEnemy != mp_Enemies.end() ;)
+    {
+        Enemy *EnemyItem = *iEnemy;
+        QPointF EndPos = mapTileToGlobalCenter(mp_EndTilePos) ;
+        QLineF Line(EnemyItem->Center(), EndPos);
+
+        // Enemy reached the end
+        if (Line.length() < 0.5)
+        {
+            ++Reached;
+            removeItem(EnemyItem);
+            auto iTemp = iEnemy++;
+            mp_Enemies.erase(iTemp);
+            delete EnemyItem;
+            continue;
+        }
+
+        ++iEnemy;
+    }
+
+    if (Reached > 0)
+    {
+        mp_Level->IncLifes(Reached);
+        emit LevelChanged(mp_Level);
+    }
+}
+
 void GameScene::MoveEnemies()
 {
     for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
@@ -324,10 +408,9 @@ void GameScene::MoveEnemies()
         if (EnemyItem->Update())
         {
             QPoint CurrentNextPoint = mapGlobalToTile(EnemyItem->getTargetPoint());
-            QPointF NextTarget = mapTileToGlobal(mp_Graph.getNextPathPoint(CurrentNextPoint, mp_DijkstraResult));
+            QPointF NextTarget = mapTileToGlobal(mp_Graph.getNextPathPoint(CurrentNextPoint, mp_PathResult));
             EnemyItem->setTargetPos(NextTarget);
         }
-       qDebug() << EnemyItem->pos();
     }
 }
 

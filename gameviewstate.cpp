@@ -52,6 +52,7 @@ void NormalViewState::mousePressEvent(QMouseEvent *event)
         {
             mp_SelectedTower = TowerItem;
             mp_SelectedTower->Indicate(Tower::EIndicator_Select);
+            emit TowerSelected();
 
             return;
         }
@@ -65,7 +66,15 @@ void NormalViewState::onEnter()
 
 void NormalViewState::onExit()
 {
+    ClearSelectedTower();
+}
 
+void NormalViewState::UpgradeRequested()
+{
+    if (!mp_SelectedTower)
+        return;
+
+    mp_Scene->UpgradeTower(mp_SelectedTower);
 }
 
 void NormalViewState::ClearSelectedTower()
@@ -81,33 +90,38 @@ void NormalViewState::ClearSelectedTower()
 
 BuildViewState::BuildViewState(GameView *View, GameScene *Scene, QObject *Parent)
     : GameViewState(View, Scene, Parent)
+    , mp_PrevTilePos({-1,-1})
 {
 
 }
 
 void BuildViewState::mouseMoveEvent(QMouseEvent *event)
 {
-    mp_Scene->removeItem(mp_Tower);
-    mp_Scene->AddTempGameItem(mp_Tower, mp_Scene->mapGlobalToTile(event->pos()));
+    QPoint CurrentTilePos = mp_Scene->mapGlobalToTile(event->pos());
+    if (mp_PrevTilePos == CurrentTilePos)
+        return;
+
+    mp_Scene->RemoveTempItem(mp_Tower);
+    mp_Scene->AddTempGameItem(mp_Tower, CurrentTilePos);
     mp_CanBuild = mp_Scene->CanBuildTower(mp_Tower);
     mp_Tower->Indicate(mp_CanBuild ? Tower::EIndicator_CanBuild : Tower::EIndicator_CanNotBuild);
+    mp_PrevTilePos = CurrentTilePos;
 }
 
 void BuildViewState::leaveEvent()
 {
-    mp_Scene->removeItem(mp_Tower);
+    mp_Scene->RemoveTempItem(mp_Tower);
 }
 
 void BuildViewState::mousePressEvent(QMouseEvent *event)
 {
     mp_Build = event->button() == Qt::LeftButton;
-    if (mp_Build && mp_CanBuild || !mp_Build)
+    if ((mp_Build && mp_CanBuild) || !mp_Build)
         emit wantLeave();
 }
 
 void BuildViewState::onEnter()
 {
-    mp_Scene->ShowMesh();
     mp_Tower->Indicate(Tower::EIndicator_CanBuild);
     mp_View->setCursor(Qt::PointingHandCursor);
 }
@@ -115,7 +129,7 @@ void BuildViewState::onEnter()
 void BuildViewState::onExit()
 {
     if (!mp_Build)
-        mp_Scene->removeItem(mp_Tower);
+        mp_Scene->RemoveTempItem(mp_Tower);
     else
     {
         mp_Scene->BuildTower(mp_Tower);
@@ -123,8 +137,8 @@ void BuildViewState::onExit()
     }
 
     mp_Tower = nullptr;
-    mp_Scene->HideMesh();
     mp_View->setCursor(Qt::ArrowCursor);
+    mp_PrevTilePos = {-1, -1};
 }
 
 void BuildViewState::AttachTower(Tower *Tower)
