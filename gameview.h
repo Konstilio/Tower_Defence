@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QGraphicsView>
+#include <QPointer>
 
 class GameScene;
 class GameViewState;
@@ -26,9 +27,11 @@ public slots:
     void BuildWanted(int towerId);
 
 signals:
-    void LevelChanged(Level *CurrentLevel);
+    void TowerSelected(bool);
+    void SelectionCleared();
+    void LevelChanged(QPointer<Level> CurrentLevel);
     void UpgradeWanted();
-    void TowerSelected();
+    void SellWanted();
 
 private:
     void ChangeState(GameViewState *State);

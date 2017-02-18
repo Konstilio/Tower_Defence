@@ -163,10 +163,13 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
 
 void GameScene::UpgradeTower(Tower *TowerItem)
 {
-    if (mp_Level->getCosts() < TowerItem->getUpgradeCost())
+    if (!mp_Towers.contains(TowerItem))
         return;
 
-    if (!mp_Towers.contains(TowerItem))
+    if (!TowerItem->CanBeUpgraded())
+        return;
+
+    if (mp_Level->getCosts() < TowerItem->getUpgradeCost())
         return;
 
     // Remove old cache
@@ -181,6 +184,19 @@ void GameScene::UpgradeTower(Tower *TowerItem)
 
     mp_Level->ReduceCosts(TowerItem->getUpgradeCost());
     emit LevelChanged(mp_Level);
+}
+
+void GameScene::SellTower(Tower *TowerItem)
+{
+    auto iTower = mp_Towers.find(TowerItem);
+    if (iTower == mp_Towers.end())
+        return;
+
+    mp_Towers.erase(iTower);
+    removeItem(TowerItem);
+    mp_Level->AddCosts(TowerItem->getSellCost());
+    emit LevelChanged(mp_Level);
+    delete TowerItem;
 }
 
 void GameScene::Update()

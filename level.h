@@ -31,7 +31,7 @@ private:
 
     // User
     int mp_Lifes = 20;
-    int mp_Costs = 1000;
+    int mp_Costs = 100;
 
     // General
     int mp_LevelNumber = 1;

@@ -17,11 +17,13 @@ public:
     ~UserBuildMenuWidget();
 
 public slots:
-    void onTowerSelected();
+    void onTowerSelected(bool CanBeUpgraded);
+    void onSelectionCleared();
 
 signals:
     void BuildWanted(int towerId);
     void UpgradeWanted();
+    void SellWanted();
 
 private:
     Ui::UserBuildMenuWidget *ui;

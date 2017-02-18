@@ -3,9 +3,10 @@
 
 #include <QObject>
 #include <QMouseEvent>
+#include <QPointer>
+#include "tower.h"
 class GameView;
 class GameScene;
-class Tower;
 
 class GameViewState : public QObject
 {
@@ -39,12 +40,14 @@ public:
 
 public slots:
     void UpgradeRequested();
+    void SellRequested();
 
 signals:
-    void TowerSelected();
+    void TowerSelected(bool);
+    void SelectionCleared();
 
 private:
-    Tower *mp_SelectedTower = nullptr;
+    QPointer<Tower> mp_SelectedTower = nullptr;
     void ClearSelectedTower();
 };
 
@@ -71,7 +74,7 @@ signals:
 private:
 
     Tower *mp_Tower = nullptr;
-    bool mp_Build = false;
+    bool mp_WantBuild = false;
     bool mp_CanBuild = false;
 
     QPoint mp_PrevTilePos;

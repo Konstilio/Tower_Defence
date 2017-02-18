@@ -52,11 +52,13 @@ void NormalViewState::mousePressEvent(QMouseEvent *event)
         {
             mp_SelectedTower = TowerItem;
             mp_SelectedTower->Indicate(Tower::EIndicator_Select);
-            emit TowerSelected();
+            emit TowerSelected(mp_SelectedTower->CanBeUpgraded());
 
             return;
         }
     }
+
+    emit SelectionCleared();
 }
 
 void NormalViewState::onEnter()
@@ -77,12 +79,21 @@ void NormalViewState::UpgradeRequested()
     mp_Scene->UpgradeTower(mp_SelectedTower);
 }
 
+void NormalViewState::SellRequested()
+{
+    if (!mp_SelectedTower)
+        return;
+
+    mp_Scene->SellTower(mp_SelectedTower);
+    ClearSelectedTower();
+}
+
 void NormalViewState::ClearSelectedTower()
 {
     if (mp_SelectedTower)
     {
         mp_SelectedTower->ClearIndicator();
-        mp_SelectedTower = nullptr;
+        mp_SelectedTower.clear();
     }
 }
 
@@ -115,8 +126,8 @@ void BuildViewState::leaveEvent()
 
 void BuildViewState::mousePressEvent(QMouseEvent *event)
 {
-    mp_Build = event->button() == Qt::LeftButton;
-    if ((mp_Build && mp_CanBuild) || !mp_Build)
+    mp_WantBuild = event->button() == Qt::LeftButton;
+    if ((mp_WantBuild && mp_CanBuild) || !mp_WantBuild)
         emit wantLeave();
 }
 
@@ -128,7 +139,7 @@ void BuildViewState::onEnter()
 
 void BuildViewState::onExit()
 {
-    if (!mp_Build)
+    if (!mp_WantBuild)
         mp_Scene->RemoveTempItem(mp_Tower);
     else
     {

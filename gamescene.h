@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QPoint>
 #include <QSet>
+#include <QPointer>
 #include "tilegraph.h"
 
 class Tower;
@@ -28,7 +29,8 @@ public:
     // Towers
     bool CanBuildTower(Tower *TowerItem) const;
     void UpgradeTower(Tower *TowerItem);
-    // Next functions assumes that tower already added to scene as temp object
+    void SellTower(Tower *TowerItem);
+    // BuildTower assumes that tower already added to scene as temp object
     void BuildTower(Tower *TowerItem);
 
 
@@ -37,7 +39,7 @@ public slots:
 
 signals:
     void SceneUpdated();
-    void LevelChanged(Level *CurrentLevel);
+    void LevelChanged(QPointer<Level> CurrentLevel);
 
 private:
     void InitUpdateTimer();

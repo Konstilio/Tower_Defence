@@ -14,5 +14,7 @@
         <file>Images/upgrade.png</file>
         <file>Images/superiortower.png</file>
         <file>Images/eifel.png</file>
+        <file>Images/sell30.png</file>
+        <file>Images/sell40.png</file>
     </qresource>
 </RCC>

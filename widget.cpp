@@ -26,9 +26,10 @@ Widget::Widget(QWidget *parent) :
 
     connect(mp_BuildMenuWidget, &UserBuildMenuWidget::BuildWanted, mp_View, &GameView::BuildWanted, Qt::QueuedConnection);
     connect(mp_BuildMenuWidget, &UserBuildMenuWidget::UpgradeWanted, mp_View, &GameView::UpgradeWanted, Qt::QueuedConnection);
+    connect(mp_BuildMenuWidget, &UserBuildMenuWidget::SellWanted, mp_View, &GameView::SellWanted, Qt::QueuedConnection);
     connect(mp_View, &GameView::LevelChanged, mp_StatusWidget, &UserStatusWidget::LevelChanged);
     connect(mp_View, &GameView::TowerSelected, mp_BuildMenuWidget, &UserBuildMenuWidget::onTowerSelected);
-
+    connect(mp_View, &GameView::SelectionCleared, mp_BuildMenuWidget, &UserBuildMenuWidget::onSelectionCleared);
 }
 
 Widget::~Widget()

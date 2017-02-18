@@ -6,7 +6,7 @@
 
 class Enemy;
 
-class Tower : public QGraphicsPixmapItem
+class Tower : public QObject, public QGraphicsPixmapItem
 {
 public:
     enum EIndicator
@@ -50,6 +50,7 @@ public:
     virtual bool CanShoot() const = 0;
     virtual bool CanBeUpgraded() const = 0;
     int getUpgradeCost() const;
+    int getSellCost() const;
 
     int type() const;
     QPointF Center() const;

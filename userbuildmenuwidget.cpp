@@ -14,7 +14,7 @@ UserBuildMenuWidget::UserBuildMenuWidget(QWidget *parent) :
     ui->mp_IceTowerButton->setIcon(QIcon(":/Images/icetower.png"));
     ui->mp_StoneTowerButton->setIcon(QIcon(":/Images/stonetower.png"));
     ui->mp_UpgradeTowerButton->setIcon(QIcon(":/Images/upgrade.png"));
-    //ui->mp_RemoveTowerButton->setIcon(QIcon(":/Images/tree.png"));
+    ui->mp_SellTowerButton->setIcon(QIcon(":/Images/sell30.png"));
 
     mp_ButtonGroup = new QButtonGroup(this);
     mp_ButtonGroup->addButton(ui->mp_TreeTowerButton, Tower::ETowerId_Tree);
@@ -22,8 +22,9 @@ UserBuildMenuWidget::UserBuildMenuWidget(QWidget *parent) :
     mp_ButtonGroup->addButton(ui->mp_IceTowerButton, Tower::ETowerId_Ice);
     mp_ButtonGroup->addButton(ui->mp_StoneTowerButton, Tower::ETowerId_Stone);
     mp_ButtonGroup->addButton(ui->mp_UpgradeTowerButton, Tower::ETowerId_Upgrade);
+    mp_ButtonGroup->addButton(ui->mp_SellTowerButton, Tower::ETowerId_Sell);
 
-    ui->mp_UpgradeTowerButton->hide();
+    onSelectionCleared();
 
     connect(mp_ButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(onButtonClicked(int)));
 
@@ -34,15 +35,25 @@ UserBuildMenuWidget::~UserBuildMenuWidget()
     delete ui;
 }
 
-void UserBuildMenuWidget::onTowerSelected()
+void UserBuildMenuWidget::onTowerSelected(bool CanBeUpgraded)
 {
     ui->mp_UpgradeTowerButton->show();
+    ui->mp_UpgradeTowerButton->setEnabled(CanBeUpgraded);
+    ui->mp_SellTowerButton->show();
+}
+
+void UserBuildMenuWidget::onSelectionCleared()
+{
+    ui->mp_UpgradeTowerButton->hide();
+    ui->mp_SellTowerButton->hide();
 }
 
 void UserBuildMenuWidget::onButtonClicked(int buttonId)
 {
    if (buttonId == Tower::ETowerId_Upgrade)
        emit UpgradeWanted();
+   else if (buttonId == Tower::ETowerId_Sell)
+       emit SellWanted();
    else
        emit BuildWanted(buttonId);
 }

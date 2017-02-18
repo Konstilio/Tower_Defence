@@ -36,7 +36,9 @@ GameView::GameView(QWidget *Parent)
     mp_BuildState = new BuildViewState(this, mp_Scene, this);
 
     connect(this, &GameView::UpgradeWanted, mp_NormalState, &NormalViewState::UpgradeRequested);
+    connect(this, &GameView::SellWanted, mp_NormalState, &NormalViewState::SellRequested);
     connect(mp_NormalState, &NormalViewState::TowerSelected, this, &GameView::TowerSelected);
+    connect(mp_NormalState, &NormalViewState::SelectionCleared, this, &GameView::SelectionCleared);
     connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::ChangeStateToNormal);
     connect(mp_Scene, &GameScene::SceneUpdated, mp_BuildState, &BuildViewState::onSceneUpdated);
     connect(mp_Scene, &GameScene::LevelChanged, this, &GameView::LevelChanged, Qt::QueuedConnection);

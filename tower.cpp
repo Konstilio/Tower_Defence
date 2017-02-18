@@ -7,7 +7,7 @@
 // Tower
 
 Tower::Tower(QGraphicsItem *Parent)
-    : QGraphicsPixmapItem(Parent)
+    : QObject(), QGraphicsPixmapItem(Parent)
 {
 
 }
@@ -108,6 +108,11 @@ int Tower::getPower() const
 int Tower::getUpgradeCost() const
 {
     return 100;
+}
+
+int Tower::getSellCost() const
+{
+    return 0.75 * getCost();
 }
 
 int Tower::type() const

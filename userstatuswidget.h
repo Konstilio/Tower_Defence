@@ -2,7 +2,8 @@
 #define USERSTATUSWIDGET_H
 
 #include <QWidget>
-class Level;
+#include <QPointer>
+#include "level.h"
 
 namespace Ui {
 class UserStatusWidget;
@@ -17,7 +18,7 @@ public:
     ~UserStatusWidget();
 
 public slots:
-    void LevelChanged(Level *CurrentLevel);
+    void LevelChanged(QPointer<Level> CurrentLevel);
 
 private:
     Ui::UserStatusWidget *ui;
