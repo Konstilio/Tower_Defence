@@ -28,6 +28,7 @@ public:
 
     // Towers
     bool CanBuildTower(Tower *TowerItem) const;
+    bool CanUpgradeTower(Tower *TowerItem) const;
     void UpgradeTower(Tower *TowerItem);
     void SellTower(Tower *TowerItem);
     // BuildTower assumes that tower already added to scene as temp object

@@ -37,6 +37,7 @@ GameView::GameView(QWidget *Parent)
 
     connect(this, &GameView::UpgradeWanted, mp_NormalState, &NormalViewState::UpgradeRequested);
     connect(this, &GameView::SellWanted, mp_NormalState, &NormalViewState::SellRequested);
+    connect(this, &GameView::LevelChanged, mp_NormalState, &NormalViewState::onLevelChanged, Qt::QueuedConnection);
     connect(mp_NormalState, &NormalViewState::TowerSelected, this, &GameView::TowerSelected);
     connect(mp_NormalState, &NormalViewState::SelectionCleared, this, &GameView::SelectionCleared);
     connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::ChangeStateToNormal);

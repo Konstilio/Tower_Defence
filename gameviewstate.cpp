@@ -52,7 +52,7 @@ void NormalViewState::mousePressEvent(QMouseEvent *event)
         {
             mp_SelectedTower = TowerItem;
             mp_SelectedTower->Indicate(Tower::EIndicator_Select);
-            emit TowerSelected(mp_SelectedTower->CanBeUpgraded());
+            emit TowerSelected(mp_Scene->CanUpgradeTower(mp_SelectedTower));
 
             return;
         }
@@ -86,6 +86,12 @@ void NormalViewState::SellRequested()
 
     mp_Scene->SellTower(mp_SelectedTower);
     ClearSelectedTower();
+}
+
+void NormalViewState::onLevelChanged()
+{
+    if (mp_SelectedTower)
+        emit TowerSelected(mp_Scene->CanUpgradeTower(mp_SelectedTower));
 }
 
 void NormalViewState::ClearSelectedTower()

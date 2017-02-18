@@ -161,6 +161,13 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
     return true;
 }
 
+bool GameScene::CanUpgradeTower(Tower *TowerItem) const
+{
+    Q_ASSERT(mp_Towers.contains(TowerItem));
+
+    return TowerItem->CanBeUpgraded() && (mp_Level->getCosts() >= TowerItem->getUpgradeCost());
+}
+
 void GameScene::UpgradeTower(Tower *TowerItem)
 {
     if (!mp_Towers.contains(TowerItem))

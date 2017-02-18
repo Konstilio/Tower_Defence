@@ -41,6 +41,7 @@ public:
 public slots:
     void UpgradeRequested();
     void SellRequested();
+    void onLevelChanged();
 
 signals:
     void TowerSelected(bool);
