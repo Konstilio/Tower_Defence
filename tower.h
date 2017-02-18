@@ -58,12 +58,15 @@ public:
     QPointF Center() const;
     qreal getRangeRadius() const;
 
-    virtual Ammo *ShootAmmo();
+    Ammo *ShootAmmo();
 
 protected:
+    virtual QPixmap AmmoPixmap() const = 0;
+
     QGraphicsEllipseItem *mp_RangeCircle = nullptr;
     int mp_ShootTicks = 0;
     bool mp_HaveTarget = false;
+    bool mp_Upgraded = false;
 
     // Enemy target to shoot
     Enemy *mp_Target;
@@ -91,6 +94,9 @@ public:
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
 
+protected:
+    QPixmap AmmoPixmap() const override;
+
 private:
     friend class TowerFactory;
     TreeTower(QGraphicsItem *Parent = 0);
@@ -104,7 +110,9 @@ public:
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
 
-    Ammo *ShootAmmo() override;
+protected:
+    QPixmap AmmoPixmap() const override;
+
 private:
     friend class TowerFactory;
     AcidTower(QGraphicsItem *Parent = 0);
@@ -118,7 +126,9 @@ public:
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
 
-    Ammo *ShootAmmo() override;
+protected:
+    QPixmap AmmoPixmap() const override;
+
 private:
     friend class TowerFactory;
     IceTower(QGraphicsItem *Parent = 0);
@@ -132,7 +142,9 @@ public:
     bool CanShoot() const override;
     bool CanBeUpgraded() const override;
 
-    Ammo *ShootAmmo() override;
+protected:
+    QPixmap AmmoPixmap() const override;
+
 private:
     friend class TowerFactory;
     StoneTower(QGraphicsItem *Parent = 0);

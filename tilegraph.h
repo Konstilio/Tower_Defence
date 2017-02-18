@@ -52,7 +52,7 @@ public:
 
     int static MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile);
     void getLogicNeighbours(const Tile& Current, int Distance, QSet<const Tile *> &o_Result) const; // 9 Neighbours (include itself, if distance 1)
-    std::vector<const Tile *> getPathNeighbours(const Tile& Current) const; // 4 Neighbours
+    std::vector<const Tile *> getPathNeighbours(const Tile &Current) const; // 4 Neighbours
 
     int getTileIndex(const Tile *CurrentTile) const;
     int getSize() const;

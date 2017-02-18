@@ -238,6 +238,9 @@ void GameScene::SellTower(Tower *TowerItem)
     if (iTower == mp_Towers.end())
         return;
 
+    // Remove old cache
+    UpdateTowerPosesCache(TowerItem, false);
+
     mp_Towers.erase(iTower);
     removeItem(TowerItem);
     mp_Level->AddCosts(TowerItem->getSellCost());

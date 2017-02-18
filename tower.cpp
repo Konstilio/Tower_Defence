@@ -94,6 +94,7 @@ void Tower::Upgrade()
     mp_Range = 3;
     mp_Power = 6;
     InitRange();
+    mp_Upgraded = true;
 }
 
 int Tower::getRange() const
@@ -136,7 +137,13 @@ qreal Tower::getRangeRadius() const
 Ammo *Tower::ShootAmmo()
 {
     Q_ASSERT(CanShoot());
-    return new Ammo(this, mp_Target);
+    Ammo *Result = new Ammo(this, mp_Target);
+    if (mp_Upgraded)
+        Result->setPixmap(GeneralUtils::Instance().AmmoAcidPixmap());
+    else
+        Result->setPixmap(AmmoPixmap());
+
+    return Result;
 }
 
 // Tower Factory
@@ -188,6 +195,11 @@ bool TreeTower::CanBeUpgraded() const
     return false;
 }
 
+QPixmap TreeTower::AmmoPixmap() const
+{
+    return QPixmap();
+}
+
 // AcidTower
 
 AcidTower::AcidTower(QGraphicsItem *Parent)
@@ -218,11 +230,9 @@ bool AcidTower::CanBeUpgraded() const
     return true;
 }
 
-Ammo *AcidTower::ShootAmmo()
+QPixmap AcidTower::AmmoPixmap() const
 {
-    Ammo *Result = Tower::ShootAmmo();
-    Result->setPixmap(GeneralUtils::Instance().AmmoAcidPixmap());
-    return Result;
+    return GeneralUtils::Instance().AmmoAcidPixmap();
 }
 
 // IceTower
@@ -255,12 +265,11 @@ bool IceTower::CanBeUpgraded() const
     return true;
 }
 
-Ammo *IceTower::ShootAmmo()
+QPixmap IceTower::AmmoPixmap() const
 {
-    Ammo *Result = Tower::ShootAmmo();
-    Result->setPixmap(GeneralUtils::Instance().AmmoIcePixmap());
-    return Result;
+    return GeneralUtils::Instance().AmmoIcePixmap();
 }
+
 
 // StoneTower
 
@@ -292,9 +301,8 @@ bool StoneTower::CanBeUpgraded() const
     return true;
 }
 
-Ammo *StoneTower::ShootAmmo()
+QPixmap StoneTower::AmmoPixmap() const
 {
-    Ammo *Result = Tower::ShootAmmo();
-    Result->setPixmap(GeneralUtils::Instance().AmmoStonePixmap());
-    return Result;
+    return GeneralUtils::Instance().AmmoStonePixmap();
 }
+
