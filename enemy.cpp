@@ -8,7 +8,7 @@
 // Enemy
 
 Enemy::Enemy(QGraphicsItem *Parent)
-    : QGraphicsPixmapItem(Parent)
+    : QObject(), QGraphicsPixmapItem(Parent)
 {
 
 }
@@ -22,6 +22,11 @@ int Enemy::type() const
 int Enemy::getHealth() const
 {
     return mp_Health;
+}
+
+int Enemy::getInitialHealth() const
+{
+    return mp_InitialHealth;
 }
 
 bool Enemy::Update()
@@ -64,14 +69,14 @@ QPointF Enemy::Center()
 }
 
 // Enemy Factory
-Enemy *EnemyFactory::Create(int EnemyId)
+Enemy *EnemyFactory::Create(EEnemy EnemyId)
 {
     Enemy *Result = nullptr;
-    if (EnemyId == OutcastEnemy::getId())
+    if (EnemyId == EEnemy_Outcast)
         Result = new OutcastEnemy();
-    else if (EnemyId == OutlawEnemy::getId())
+    else if (EnemyId == EEnemy_Outlaw)
         Result = new OutlawEnemy();
-    else if (EnemyId == KatanamenEnemy::getId())
+    else if (EnemyId == EEnemy_Katanamen)
         Result = new KatanamenEnemy();
     else
         Q_ASSERT(false);
@@ -85,7 +90,8 @@ Enemy *EnemyFactory::Create(int EnemyId)
 OutcastEnemy::OutcastEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_Health = 5;
+    mp_InitialHealth = 5;
+    mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledOutcastEnemyPixmap());
 }
 
@@ -96,12 +102,7 @@ int OutcastEnemy::getBonus() const
 
 int OutcastEnemy::getSpeed() const
 {
-    return 1;
-}
-
-int OutcastEnemy::getId()
-{
-    return 1;
+    return ESpeed_Slow;
 }
 
 // OutlawEnemy
@@ -109,7 +110,8 @@ int OutcastEnemy::getId()
 OutlawEnemy::OutlawEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_Health = 15;
+    mp_InitialHealth = 15;
+    mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledOutlawEnemyPixmap());
 }
 
@@ -120,12 +122,7 @@ int OutlawEnemy::getBonus() const
 
 int OutlawEnemy::getSpeed() const
 {
-    return 1;
-}
-
-int OutlawEnemy::getId()
-{
-    return 2;
+    return ESpeed_Slow;
 }
 
 // KatanamenEnemy
@@ -133,22 +130,18 @@ int OutlawEnemy::getId()
 KatanamenEnemy::KatanamenEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_Health = 5;
+    mp_InitialHealth = 10;
+    mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledKatanamenEnemyPixmap());
 }
 
 int KatanamenEnemy::getBonus() const
 {
-    return 3;
+    return 4;
 }
 
 int KatanamenEnemy::getSpeed() const
 {
-    return 3;
-}
-
-int KatanamenEnemy::getId()
-{
-    return 3;
+    return ESpeed_Fast;
 }
 

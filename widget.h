@@ -2,9 +2,10 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include "gameview.h"
-#include "userstatuswidget.h"
-#include "userbuildmenuwidget.h"
+class GameView;
+class UserStatusWidget;
+class UserBuildMenuWidget;
+class ItemInfoWidget;
 
 namespace Ui {
 class Widget;
@@ -24,6 +25,7 @@ private:
     GameView *mp_View;
     UserStatusWidget *mp_StatusWidget;
     UserBuildMenuWidget *mp_BuildMenuWidget;
+    ItemInfoWidget *mp_ItemInfoWidget;
 
 };
 

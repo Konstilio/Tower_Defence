@@ -74,6 +74,24 @@ void GameScene::RemoveTempItem(QGraphicsItem *Item)
     mp_TempTile = nullptr;
 }
 
+void GameScene::MoveTempItem(QGraphicsItem *Item, QPoint TilePos)
+{
+    QPointF GlobalPos = mapTileToGlobal(TilePos);
+    Item->setX(GlobalPos.x());
+    Item->setY(GlobalPos.y());
+
+    if (mp_TempTile->getType() == Tile::EType_Temp)
+        mp_TempTile->setType(Tile::EType_Empty);
+
+    Tile *TempTile = &mp_Graph.getTile(TilePos);
+    if (TempTile->getType() == Tile::EType_Empty)
+    {
+        TempTile->setType(Tile::EType_Temp);
+        mp_TempPathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+    }
+    mp_TempTile = TempTile;
+}
+
 void GameScene::InitMesh()
 {
     auto MeshWidth = mp_Width / mp_TileSize;
@@ -150,7 +168,7 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
     for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
     {
         QPoint EnemyTilePos = mapGlobalToTile((*iEnemy)->pos());
-        if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) < 1)
+        if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) <= 1)
             return false;
     }
 
@@ -225,9 +243,18 @@ void GameScene::Update()
 
     MoveEnemies();
 
-    emit SceneUpdated();
+    if (IncUpdateSignal() == 0)
+        emit SceneUpdated();
     qDebug() << "Update() took " << timer.elapsed() << " ms " << "Ammos: " << mp_Ammos.size();
 
+}
+
+int GameScene::IncUpdateSignal()
+{
+    int Result = --mp_UpdateSignalTicks;
+    if (mp_UpdateSignalTicks == 0)
+        mp_UpdateSignalTicks = 12;
+    return Result;
 }
 
 void GameScene::InitUpdateTimer()
@@ -329,7 +356,7 @@ void GameScene::AddEnemy()
     if (mp_Enemies.size() == mp_Level->getMaxEnemies())
         return;
 
-    Enemy *EnemyItem = EnemyFactory::Create(OutcastEnemy::getId());
+    Enemy *EnemyItem = EnemyFactory::Create(EnemyFactory::EEnemy_Outlaw);
     addItem(EnemyItem);
     EnemyItem->setX(mp_StartGlobalPos.x());
     EnemyItem->setY(mp_StartGlobalPos.y());

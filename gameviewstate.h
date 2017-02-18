@@ -42,14 +42,18 @@ public slots:
     void UpgradeRequested();
     void SellRequested();
     void onLevelChanged();
+    void onSceneUpdated();
 
 signals:
     void TowerSelected(bool);
+    void TowerSelected(QPointer<Tower>);
+    void EnemySelected(QPointer<Enemy>);
     void SelectionCleared();
 
 private:
-    QPointer<Tower> mp_SelectedTower = nullptr;
-    void ClearSelectedTower();
+    QPointer<Tower> mp_SelectedTower;
+    QPointer<Enemy> mp_SelectedEnemy;
+    void ClearSelected();
 };
 
 class BuildViewState : public GameViewState
@@ -64,13 +68,15 @@ public:
     void onEnter() override;
     void onExit() override;
 
-    void AttachTower(Tower *Tower);
+    void AttachTower(Tower *TowerItem);
 
 public slots:
     void onSceneUpdated();
 
 signals:
-    void wantLeave();
+    void WantLeave();
+    void TowerAttached(QPointer<Tower> TowerItem);
+    void AttachedTowerCleared();
 
 private:
 

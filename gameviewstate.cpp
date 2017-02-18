@@ -2,6 +2,7 @@
 #include "gameview.h"
 #include "gamescene.h"
 #include "tower.h"
+#include "enemy.h"
 #include <QCursor>
 #include <QDebug>
 
@@ -35,25 +36,35 @@ void NormalViewState::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        ClearSelectedTower();
+        ClearSelected();
+        emit SelectionCleared();
         return;
     }
 
     if (event->button() != Qt::LeftButton)
         return;
 
-    ClearSelectedTower();
+    ClearSelected();
 
     auto Items = mp_Scene->items(event->pos());
     for (auto *Item : Items)
     {
         auto *TowerItem = qgraphicsitem_cast<Tower *>(Item);
-        if (TowerItem != nullptr)
+        if (TowerItem)
         {
             mp_SelectedTower = TowerItem;
             mp_SelectedTower->Indicate(Tower::EIndicator_Select);
             emit TowerSelected(mp_Scene->CanUpgradeTower(mp_SelectedTower));
+            emit TowerSelected(mp_SelectedTower);
 
+            return;
+        }
+
+        auto *EnemyItem = qgraphicsitem_cast<Enemy *>(Item);
+        if (EnemyItem)
+        {
+            mp_SelectedEnemy = EnemyItem;
+            emit EnemySelected(mp_SelectedEnemy);
             return;
         }
     }
@@ -68,7 +79,8 @@ void NormalViewState::onEnter()
 
 void NormalViewState::onExit()
 {
-    ClearSelectedTower();
+    ClearSelected();
+    emit SelectionCleared();
 }
 
 void NormalViewState::UpgradeRequested()
@@ -85,7 +97,8 @@ void NormalViewState::SellRequested()
         return;
 
     mp_Scene->SellTower(mp_SelectedTower);
-    ClearSelectedTower();
+    ClearSelected();
+    emit SelectionCleared();
 }
 
 void NormalViewState::onLevelChanged()
@@ -94,13 +107,21 @@ void NormalViewState::onLevelChanged()
         emit TowerSelected(mp_Scene->CanUpgradeTower(mp_SelectedTower));
 }
 
-void NormalViewState::ClearSelectedTower()
+void NormalViewState::onSceneUpdated()
+{
+    if (!mp_SelectedTower)
+        emit EnemySelected(mp_SelectedEnemy);
+}
+
+void NormalViewState::ClearSelected()
 {
     if (mp_SelectedTower)
     {
         mp_SelectedTower->ClearIndicator();
         mp_SelectedTower.clear();
     }
+
+    mp_SelectedEnemy.clear();
 }
 
 // BuildViewState
@@ -118,8 +139,15 @@ void BuildViewState::mouseMoveEvent(QMouseEvent *event)
     if (mp_PrevTilePos == CurrentTilePos)
         return;
 
-    mp_Scene->RemoveTempItem(mp_Tower);
-    mp_Scene->AddTempGameItem(mp_Tower, CurrentTilePos);
+    Q_ASSERT(mp_Tower);
+    if (mp_Tower->scene() != mp_Scene)
+    {
+        mp_Scene->RemoveTempItem(mp_Tower);
+        mp_Scene->AddTempGameItem(mp_Tower, CurrentTilePos);
+    }
+    else
+        mp_Scene->MoveTempItem(mp_Tower, CurrentTilePos);
+
     mp_CanBuild = mp_Scene->CanBuildTower(mp_Tower);
     mp_Tower->Indicate(mp_CanBuild ? Tower::EIndicator_CanBuild : Tower::EIndicator_CanNotBuild);
     mp_PrevTilePos = CurrentTilePos;
@@ -132,15 +160,19 @@ void BuildViewState::leaveEvent()
 
 void BuildViewState::mousePressEvent(QMouseEvent *event)
 {
+
     mp_WantBuild = event->button() == Qt::LeftButton;
+    if (mp_WantBuild)
+        mp_CanBuild = mp_Scene->CanBuildTower(mp_Tower);
     if ((mp_WantBuild && mp_CanBuild) || !mp_WantBuild)
-        emit wantLeave();
+        emit WantLeave();
 }
 
 void BuildViewState::onEnter()
 {
     mp_Tower->Indicate(Tower::EIndicator_CanBuild);
     mp_View->setCursor(Qt::PointingHandCursor);
+    emit TowerAttached(mp_Tower);
 }
 
 void BuildViewState::onExit()
@@ -153,14 +185,15 @@ void BuildViewState::onExit()
         mp_Tower->ClearIndicator();
     }
 
+    emit AttachedTowerCleared();
     mp_Tower = nullptr;
     mp_View->setCursor(Qt::ArrowCursor);
     mp_PrevTilePos = {-1, -1};
 }
 
-void BuildViewState::AttachTower(Tower *Tower)
+void BuildViewState::AttachTower(Tower *TowerItem)
 {
-    mp_Tower = Tower;
+    mp_Tower = TowerItem;
 }
 
 void BuildViewState::onSceneUpdated()

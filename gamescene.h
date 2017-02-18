@@ -25,6 +25,7 @@ public:
 
     void AddTempGameItem(QGraphicsItem *Item, QPoint TilePos);
     void RemoveTempItem(QGraphicsItem *Item);
+    void MoveTempItem(QGraphicsItem *Item, QPoint TilePos);
 
     // Towers
     bool CanBuildTower(Tower *TowerItem) const;
@@ -97,6 +98,10 @@ private:
     QPoint mp_EndTilePos;
 
     Level* mp_Level = nullptr;
+
+    // Limit sending scene updated signals
+    int mp_UpdateSignalTicks = 12;
+    int IncUpdateSignal();
 };
 
 #endif // GAMESCENE_H

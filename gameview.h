@@ -11,6 +11,7 @@ class NormalViewState;
 class BuildViewState;
 class Tower;
 class Level;
+class Enemy;
 
 class GameView : public QGraphicsView
 {
@@ -28,6 +29,11 @@ public slots:
 
 signals:
     void TowerSelected(bool);
+    void TowerSelected(QPointer<Tower>);
+    void EnemySelected(QPointer<Enemy>);
+    void TowerAttached(QPointer<Tower>);
+    void AttachedTowerCleared();
+
     void SelectionCleared();
     void LevelChanged(QPointer<Level> CurrentLevel);
     void UpgradeWanted();

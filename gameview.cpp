@@ -3,6 +3,7 @@
 #include "generalutils.h"
 #include "gameviewstate.h"
 #include "tower.h"
+#include "enemy.h"
 #include "level.h"
 
 GameView::GameView(QWidget *Parent)
@@ -38,10 +39,15 @@ GameView::GameView(QWidget *Parent)
     connect(this, &GameView::UpgradeWanted, mp_NormalState, &NormalViewState::UpgradeRequested);
     connect(this, &GameView::SellWanted, mp_NormalState, &NormalViewState::SellRequested);
     connect(this, &GameView::LevelChanged, mp_NormalState, &NormalViewState::onLevelChanged, Qt::QueuedConnection);
-    connect(mp_NormalState, &NormalViewState::TowerSelected, this, &GameView::TowerSelected);
+    connect(mp_NormalState, SIGNAL(TowerSelected(bool)), this, SIGNAL(TowerSelected(bool)));
+    connect(mp_NormalState, SIGNAL(TowerSelected(QPointer<Tower>)), this, SIGNAL(TowerSelected(QPointer<Tower>)));
+    connect(mp_NormalState, &NormalViewState::EnemySelected, this, &GameView::EnemySelected);
     connect(mp_NormalState, &NormalViewState::SelectionCleared, this, &GameView::SelectionCleared);
-    connect(mp_BuildState, &BuildViewState::wantLeave, this, &GameView::ChangeStateToNormal);
+    connect(mp_BuildState, &BuildViewState::WantLeave, this, &GameView::ChangeStateToNormal);
+    connect(mp_BuildState, &BuildViewState::TowerAttached, this, &GameView::TowerAttached);
+    connect(mp_BuildState, &BuildViewState::AttachedTowerCleared, this, &GameView::AttachedTowerCleared);
     connect(mp_Scene, &GameScene::SceneUpdated, mp_BuildState, &BuildViewState::onSceneUpdated);
+    connect(mp_Scene, &GameScene::SceneUpdated, mp_NormalState, &NormalViewState::onSceneUpdated);
     connect(mp_Scene, &GameScene::LevelChanged, this, &GameView::LevelChanged, Qt::QueuedConnection);
     mp_Scene->StartGame();
 
