@@ -14,7 +14,7 @@ UserBuildMenuWidget::UserBuildMenuWidget(QWidget *parent) :
     ui->mp_IceTowerButton->setIcon(QIcon(":/Images/icetower50.png"));
     ui->mp_StoneTowerButton->setIcon(QIcon(":/Images/stonetower50.png"));
     ui->mp_UpgradeTowerButton->setIcon(QIcon(":/Images/upgrade.png"));
-    ui->mp_SellTowerButton->setIcon(QIcon(":/Images/sell.png"));
+    ui->mp_SellTowerButton->setIcon(QIcon(":/Images/sell40.png"));
 
     mp_ButtonGroup = new QButtonGroup(this);
     mp_ButtonGroup->addButton(ui->mp_TreeTowerButton, Tower::ETowerId_Tree);
@@ -40,6 +40,9 @@ void UserBuildMenuWidget::onGameResumed()
 {
     for (auto *Button : mp_ButtonGroup->buttons())
         Button->setEnabled(true);
+
+    ui->mp_UpgradeTowerButton->setDisabled(true);
+    ui->mp_SellTowerButton->setDisabled(true);
 }
 
 void UserBuildMenuWidget::onGamePaused()
@@ -52,13 +55,13 @@ void UserBuildMenuWidget::onTowerSelected(bool CanBeUpgraded)
 {
     ui->mp_UpgradeTowerButton->show();
     ui->mp_UpgradeTowerButton->setEnabled(CanBeUpgraded);
-    ui->mp_SellTowerButton->show();
+    ui->mp_SellTowerButton->setEnabled(true);
 }
 
 void UserBuildMenuWidget::onSelectionCleared()
 {
-    ui->mp_UpgradeTowerButton->hide();
-    ui->mp_SellTowerButton->hide();
+    ui->mp_UpgradeTowerButton->setDisabled(true);
+    ui->mp_SellTowerButton->setDisabled(true);
 }
 
 void UserBuildMenuWidget::onButtonClicked(int buttonId)
