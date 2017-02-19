@@ -115,7 +115,7 @@ int OutcastEnemy::getSpeed() const
 OutlawEnemy::OutlawEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_InitialHealth = 120;
+    mp_InitialHealth = 90;
     mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledOutlawEnemyPixmap());
 }

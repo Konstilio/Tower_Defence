@@ -205,13 +205,7 @@ bool GameScene::CanUpgradeTower(Tower *TowerItem) const
 
 void GameScene::UpgradeTower(Tower *TowerItem)
 {
-    if (!mp_Towers.contains(TowerItem))
-        return;
-
-    if (!TowerItem->CanBeUpgraded())
-        return;
-
-    if (mp_Level->getCosts() < TowerItem->getUpgradeCost())
+    if (!CanUpgradeTower(TowerItem))
         return;
 
     // Remove old cache
