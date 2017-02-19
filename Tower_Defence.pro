@@ -68,3 +68,13 @@ FORMS    += widget.ui \
 
 RESOURCES += \
     resources.qrc
+
+macx {
+    copyfiles.commands = cp -r $$PWD/Images $$OUT_PWD/$$TARGET\.app/Contents/Resources
+    macdeployqt.commands = macdeployqt $$OUT_PWD/$$TARGET\.app -dmg -verbose=2
+}
+
+QMAKE_EXTRA_TARGETS += copyfiles
+QMAKE_EXTRA_TARGETS += macdeployqt
+POST_TARGETDEPS += copyfiles
+POST_TARGETDEPS += macdeployqt

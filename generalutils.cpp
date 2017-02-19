@@ -6,25 +6,18 @@
 GeneralUtils::GeneralUtils()
 {
     QRect rec = QApplication::desktop()->screenGeometry();
-    if (rec.width() >= 1400)
+    if (rec.width() >= 1600)
     {
         mp_GameViewSize = QSize(1200, 900);
         mp_TileSize = 50;
         mp_AmmoSize = 10;
     }
-    else //if (rec.width() >= 1000)
+    else
     {
          mp_GameViewSize = QSize(800, 600);
          mp_TileSize = 40;
          mp_AmmoSize = 10;
     }
-// Not tested
-//    else
-//    {
-//         mp_GameViewSize = QSize(600, 400);
-//         mp_TileSize = 20;
-//         mp_AmmoSize = 6;
-//    }
 }
 
 GeneralUtils &GeneralUtils::Instance()
