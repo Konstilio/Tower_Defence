@@ -22,11 +22,11 @@ Widget::Widget(QWidget *parent) :
     mp_ItemInfoWidget = new ItemInfoWidget(this);
     mp_GameStateWidget = new GameStateWidget(this);
 
-    Layout->addWidget(mp_View, 0, 0, 10, 5);
-    Layout->addWidget(mp_StatusWidget, 0, 5);
-    Layout->addWidget(mp_BuildMenuWidget, 1, 5, 2, 1);
-    Layout->addWidget(mp_ItemInfoWidget, 3, 5, 5, 1);
-    Layout->addWidget(mp_GameStateWidget, 8, 5, 2, 1);
+    Layout->addWidget(mp_View, 0, 0, 12, 5);
+    Layout->addWidget(mp_StatusWidget, 0, 5, 3, 1);
+    Layout->addWidget(mp_BuildMenuWidget, 3, 5, 2, 1);
+    Layout->addWidget(mp_ItemInfoWidget, 5, 5, 5, 1);
+    Layout->addWidget(mp_GameStateWidget, 10, 5, 2, 1);
 
     Layout->setSpacing(3);
     setLayout(Layout);
@@ -39,6 +39,8 @@ Widget::Widget(QWidget *parent) :
     connect(mp_View, &GameView::LevelChanged, mp_StatusWidget, &UserStatusWidget::LevelChanged);
     connect(mp_View, SIGNAL(TowerSelected(bool)), mp_BuildMenuWidget, SLOT(onTowerSelected(bool)));
     connect(mp_View, &GameView::SelectionCleared, mp_BuildMenuWidget, &UserBuildMenuWidget::onSelectionCleared);
+    connect(mp_View, &GameView::GameResumed, mp_BuildMenuWidget, &UserBuildMenuWidget::onGameResumed);
+    connect(mp_View, &GameView::GamePaused, mp_BuildMenuWidget, &UserBuildMenuWidget::onGamePaused);
     connect(mp_View, SIGNAL(TowerSelected(QPointer<Tower>)), mp_ItemInfoWidget, SLOT(onTowerSelected(QPointer<Tower>)));
     connect(mp_View, &GameView::EnemySelected, mp_ItemInfoWidget, &ItemInfoWidget::onEnemySelected);
     connect(mp_View, &GameView::SelectionCleared, mp_ItemInfoWidget, &ItemInfoWidget::onSelectionCleared);

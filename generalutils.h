@@ -32,6 +32,7 @@ public:
     const QPixmap &AmmoAcidPixmap() const;
     const QPixmap &AmmoIcePixmap() const;
     const QPixmap &AmmoStonePixmap() const;
+    const QPixmap &AmmoFirePixmap() const;
 
     QSize GameViewSize() const;
     int TileSize() const;
@@ -52,6 +53,7 @@ private:
     mutable QPixmap mp_AmmoAcidPixmap;
     mutable QPixmap mp_AmmoIcePixmap;
     mutable QPixmap mp_AmmoStonePixmap;
+    mutable QPixmap mp_AmmoFirePixmap;
 
     // Ends
     mutable QPixmap mp_TiledStartPixmap;

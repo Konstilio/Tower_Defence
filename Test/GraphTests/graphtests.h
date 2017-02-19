@@ -13,6 +13,8 @@ private slots:
     void TestBusyPath();
     void TestHalfBusyPath();
     void TestPathExists();
+
+    void PerfomanceTests();
 };
 
 #endif // GRAPHTESTS_H

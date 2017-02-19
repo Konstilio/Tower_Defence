@@ -175,6 +175,7 @@ void BuildViewState::mousePressEvent(QMouseEvent *event)
 
 void BuildViewState::onEnter()
 {
+    Q_ASSERT(mp_Tower);
     mp_Tower->Indicate(Tower::EIndicator_CanBuild);
     mp_View->setCursor(Qt::PointingHandCursor);
     emit TowerAttached(mp_Tower);
@@ -201,7 +202,10 @@ void BuildViewState::onExit()
 
 void BuildViewState::AttachTower(Tower *TowerItem)
 {
+    Q_ASSERT(TowerItem);
+    delete mp_Tower;
     mp_Tower = TowerItem;
+    emit TowerAttached(mp_Tower);
 }
 
 void BuildViewState::onSceneUpdated()

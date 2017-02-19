@@ -51,16 +51,22 @@ public:
     const Tile &getTile(int X, int Y) const;
 
     int static MaxTileDistance(const QPoint &LeftTile, const QPoint &RightTile);
-    void getLogicNeighbours(const Tile& Current, int Distance, QSet<const Tile *> &o_Result) const; // 9 Neighbours (include itself, if distance 1)
+    void getLogicNeighbours(const Tile &Current, int Distance, QSet<const Tile *> &o_Result) const; // 9 Neighbours (include itself, if distance 1)
     std::vector<const Tile *> getPathNeighbours(const Tile &Current) const; // 4 Neighbours
 
     int getTileIndex(const Tile *CurrentTile) const;
     int getSize() const;
 
+    // Shortest Pathes
+    ShortestPathResult getShortestPathToDestination(const QPoint &DestinationTilePos) const;
     QPoint getNextPathPoint(const QPoint &TilePos, ShortestPathResult const &Result) const;
     int getPathDistance(const QPoint &TilePos, ShortestPathResult const &Result) const;
     bool AllPathesExists(ShortestPathResult const &Result) const;
 private:
+    template<typename ShortestPathAlgorithm>
+    ShortestPathResult getShortestPath(const QPoint &DestinationTilePos) const;
+    static constexpr bool mpc_UseBFS = true;
+
     int mp_TilesWidth;
     int mp_TilesHeight;
     std::vector<Tile> mp_Tiles;
@@ -79,5 +85,18 @@ struct DijkstraSearch
     ShortestPathResult operator()(const TileGraph &Graph, const QPoint &TilePos);
     ShortestPathResult operator()(const TileGraph &Graph, int X, int Y);
 };
+
+struct BFSSearch
+{
+    // Find shortest pathes to dst for all graph
+    ShortestPathResult operator()(const TileGraph &Graph, const QPoint &TilePos);
+    ShortestPathResult operator()(const TileGraph &Graph, int X, int Y);
+};
+
+template<typename ShortestPathAlgorithm>
+ShortestPathResult TileGraph::getShortestPath(const QPoint &DestinationTilePos) const
+{
+    return ShortestPathAlgorithm()(*this, DestinationTilePos);
+}
 
 #endif // TILEGRAPH_H

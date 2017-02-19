@@ -55,7 +55,7 @@ void GameScene::StartGame()
     InitMesh();
     ResetUpdateTimer();
 
-    mp_PathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+    mp_PathResult = mp_Graph.getShortestPathToDestination(mp_EndTilePos);
 
     emit LevelChanged(mp_Level);
 }
@@ -76,11 +76,13 @@ void GameScene::AddTempGameItem(QGraphicsItem *Item, QPoint TilePos)
     QPointF GlobalPos = mapTileToGlobal(TilePos);
     Item->setX(GlobalPos.x());
     Item->setY(GlobalPos.y());
+
+    // TODO: move to sep function (same code as in MoveItem)
     Tile *TempTile = &mp_Graph.getTile(TilePos);
     if (TempTile->getType() == Tile::EType_Empty)
     {
         TempTile->setType(Tile::EType_Temp);
-        mp_TempPathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+        mp_TempPathResult = mp_Graph.getShortestPathToDestination(mp_EndTilePos);
     }
     mp_TempTile = TempTile;
 }
@@ -109,7 +111,7 @@ void GameScene::MoveTempItem(QGraphicsItem *Item, QPoint TilePos)
     if (TempTile->getType() == Tile::EType_Empty)
     {
         TempTile->setType(Tile::EType_Temp);
-        mp_TempPathResult = DijkstraSearch()(mp_Graph, mp_EndTilePos);
+        mp_TempPathResult = mp_Graph.getShortestPathToDestination(mp_EndTilePos);
     }
     mp_TempTile = TempTile;
 }
@@ -170,9 +172,6 @@ void GameScene::BuildTower(Tower *TowerItem)
 
 bool GameScene::CanBuildTower(Tower *TowerItem) const
 {
-    QElapsedTimer timer;
-    timer.start();
-
     if (mp_Level->getCosts() < TowerItem->getCost())
         return false;
 
@@ -189,14 +188,14 @@ bool GameScene::CanBuildTower(Tower *TowerItem) const
     for (auto iEnemy = mp_Enemies.cbegin(); iEnemy != mp_Enemies.cend() ; ++iEnemy)
     {
         QPoint EnemyTilePos = mapGlobalToTile((*iEnemy)->pos());
-        if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) <= 1)
+        QPoint EnemyTargetTilePos = mapGlobalToTile((*iEnemy)->getTargetPoint());
+        if (TileGraph::MaxTileDistance(TilePos, EnemyTilePos) < 1 || TileGraph::MaxTileDistance(TilePos, EnemyTargetTilePos) < 1)
             return false;
     }
 
     if (!mp_Graph.AllPathesExists(mp_TempPathResult))
         return false;
 
-    qDebug() << "CanBuildTower() took " << timer.elapsed() << " ms " << "Enemies: " << mp_Enemies.size();
     return true;
 }
 
@@ -250,8 +249,8 @@ void GameScene::SellTower(Tower *TowerItem)
 
 void GameScene::Update()
 {
-    QElapsedTimer timer;
-    timer.start();
+    //QElapsedTimer timer;
+    //timer.start();
 
     AddEnemy();
     RemoveOutOfRangeAmmos();
@@ -269,7 +268,7 @@ void GameScene::Update()
 
     if (IncUpdateSignal() == 0)
         emit SceneUpdated();
-    qDebug() << "Update() took " << timer.elapsed() << " ms " << "Ammos: " << mp_Ammos.size();
+    //qDebug() << "Update() took " << timer.elapsed() << " ms " << "Ammos: " << mp_Ammos.size();
 
 }
 
@@ -389,7 +388,7 @@ void GameScene::AddEnemy()
     if (mp_Enemies.size() == mp_Level->getMaxEnemies())
         return;
 
-    Enemy *EnemyItem = EnemyFactory::Create(EnemyFactory::EEnemy_Outlaw);
+    Enemy *EnemyItem = EnemyFactory::Create(mp_Level->GenerateEnemyId());
     addItem(EnemyItem);
     EnemyItem->setX(mp_StartGlobalPos.x());
     EnemyItem->setY(mp_StartGlobalPos.y());
@@ -416,10 +415,8 @@ void GameScene::UpdateAmmoEnemyCollisions()
     {
         Ammo *AmmoItem = *iAmmo;
         Enemy *TargetEnemy = AmmoItem->getTarget();
-        auto EnemyIt = mp_Enemies.find(TargetEnemy);
 
-        // Check if target enemy exists
-        if (EnemyIt == mp_Enemies.end())
+        if (mp_Enemies.find(TargetEnemy) == mp_Enemies.end())
         {
             // If not - delete this ammo
             RemoveAmmo(iAmmo);
@@ -436,14 +433,7 @@ void GameScene::UpdateAmmoEnemyCollisions()
         if (EnemyRect.intersects(AmmoRect))
         {
             if (TargetEnemy->Shooted(AmmoItem))
-            {
-                // Enemy killed (TODO: Move to function)
-                removeItem(TargetEnemy);
-                mp_Enemies.erase(EnemyIt);
-                mp_Level->AddCosts(TargetEnemy->getBonus());
-                delete TargetEnemy;
-                emit LevelChanged(mp_Level);
-            }
+                KillEnemy(TargetEnemy);
 
             RemoveAmmo(iAmmo);
             continue;
@@ -495,6 +485,24 @@ void GameScene::MoveEnemies()
             EnemyItem->setTargetPos(NextTarget);
         }
     }
+}
+
+void GameScene::KillEnemy(Enemy *EnemyItem)
+{
+    removeItem(EnemyItem);
+    mp_Enemies.remove(EnemyItem);
+    mp_Level->AddCosts(EnemyItem->getBonus());
+    delete EnemyItem;
+
+    if (mp_Level->KillEnemy())
+    {
+        if (mp_Level->NextLevel())
+        {
+            // Todo: win here
+        }
+    }
+
+    emit LevelChanged(mp_Level);
 }
 
 

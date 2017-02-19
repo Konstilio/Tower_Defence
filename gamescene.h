@@ -48,6 +48,8 @@ signals:
 private:
     void ResetUpdateTimer();
     void InitEndPoints();
+    // Mesh
+    void InitMesh();
 
 // Update
     // Tower updation
@@ -61,10 +63,8 @@ private:
     void UpdateAmmoEnemyCollisions();
     void RemoveReachedEnemies();
     void MoveEnemies();
+    void KillEnemy(Enemy *EnemyItem);
 //
-
-    // Mesh
-    void InitMesh();
 
     // CacheUpdates
     void UpdateTowerPosesCache(Tower *TowerItem, bool Add);

@@ -139,7 +139,7 @@ Ammo *Tower::ShootAmmo()
     Q_ASSERT(CanShoot());
     Ammo *Result = new Ammo(this, mp_Target);
     if (mp_Upgraded)
-        Result->setPixmap(GeneralUtils::Instance().AmmoAcidPixmap());
+        Result->setPixmap(GeneralUtils::Instance().AmmoFirePixmap());
     else
         Result->setPixmap(AmmoPixmap());
 
@@ -162,6 +162,7 @@ Tower *TowerFactory::Create(int towerId)
     else
         Q_ASSERT(false);
 
+    Q_ASSERT(Result);
     Result->InitRange();
     Result->ResetShootTicks();
     return Result;
@@ -283,12 +284,12 @@ StoneTower::StoneTower(QGraphicsItem *Parent)
 
 int StoneTower::getCost() const
 {
-    return 20;
+    return 30;
 }
 
 int StoneTower::getShootTicks() const
 {
-    return 15;
+    return 10;
 }
 
 bool StoneTower::CanShoot() const

@@ -39,6 +39,9 @@ signals:
     void TowerAttached(QPointer<Tower>);
     void AttachedTowerCleared();
 
+    void GameResumed();
+    void GamePaused();
+    
     void SelectionCleared();
     void LevelChanged(QPointer<Level> CurrentLevel);
     void UpgradeWanted();

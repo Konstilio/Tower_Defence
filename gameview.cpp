@@ -36,8 +36,8 @@ GameView::GameView(QWidget *Parent)
     mp_NormalState = new NormalViewState(this, mp_Scene, this);
     mp_BuildState = new BuildViewState(this, mp_Scene, this);
 
-    connect(this, &GameView::UpgradeWanted, mp_NormalState, &NormalViewState::UpgradeRequested);
-    connect(this, &GameView::SellWanted, mp_NormalState, &NormalViewState::SellRequested);
+    connect(this, &GameView::UpgradeWanted, mp_NormalState, &NormalViewState::UpgradeRequested, Qt::QueuedConnection);
+    connect(this, &GameView::SellWanted, mp_NormalState, &NormalViewState::SellRequested, Qt::QueuedConnection);
     connect(this, &GameView::LevelChanged, mp_NormalState, &NormalViewState::onLevelChanged, Qt::QueuedConnection);
     connect(mp_NormalState, SIGNAL(TowerSelected(bool)), this, SIGNAL(TowerSelected(bool)));
     connect(mp_NormalState, SIGNAL(TowerSelected(QPointer<Tower>)), this, SIGNAL(TowerSelected(QPointer<Tower>)));
@@ -59,6 +59,8 @@ void GameView::Start()
     mp_Scene->StartGame();
     mp_State = mp_NormalState;
     mp_State->onEnter();
+
+    emit GameResumed();
 }
 
 void GameView::Pause()
@@ -68,14 +70,18 @@ void GameView::Pause()
 
     setDisabled(true);
     mp_Scene->PauseGame();
+
+    emit GamePaused();
 }
 
 void GameView::Resume()
 {
+    setEnabled(true);
     mp_State = mp_NormalState;
     mp_State->onEnter();
-    setEnabled(true);
     mp_Scene->ResumeGame();
+
+    emit GameResumed();
 }
 
 void GameView::mouseMoveEvent(QMouseEvent *event)
@@ -133,6 +139,9 @@ void GameView::onSceneUpdated()
 
 void GameView::ChangeState(GameViewState *State)
 {
+    if (mp_State == State)
+        return;
+
     if (mp_State)
         mp_State->onExit();
     mp_State = State;

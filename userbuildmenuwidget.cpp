@@ -25,6 +25,7 @@ UserBuildMenuWidget::UserBuildMenuWidget(QWidget *parent) :
     mp_ButtonGroup->addButton(ui->mp_SellTowerButton, Tower::ETowerId_Sell);
 
     onSelectionCleared();
+    onGamePaused();
 
     connect(mp_ButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(onButtonClicked(int)));
 
@@ -33,6 +34,18 @@ UserBuildMenuWidget::UserBuildMenuWidget(QWidget *parent) :
 UserBuildMenuWidget::~UserBuildMenuWidget()
 {
     delete ui;
+}
+
+void UserBuildMenuWidget::onGameResumed()
+{
+    for (auto *Button : mp_ButtonGroup->buttons())
+        Button->setEnabled(true);
+}
+
+void UserBuildMenuWidget::onGamePaused()
+{
+    for (auto *Button : mp_ButtonGroup->buttons())
+        Button->setDisabled(true);
 }
 
 void UserBuildMenuWidget::onTowerSelected(bool CanBeUpgraded)

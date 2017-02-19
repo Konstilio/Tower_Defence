@@ -17,6 +17,9 @@ public:
     ~UserBuildMenuWidget();
 
 public slots:
+    void onGameResumed();
+    void onGamePaused();
+
     void onTowerSelected(bool CanBeUpgraded);
     void onSelectionCleared();
 

@@ -4,6 +4,8 @@
 #include <utility>
 #include <limits>
 #include <set>
+#include <QQueue>
+#include <type_traits>
 
 // Tile
 Tile::Tile(int X, int Y)
@@ -84,14 +86,14 @@ std::vector<const Tile *> TileGraph::getPathNeighbours(const Tile &Current) cons
 {
     std::vector<const Tile *> Result;
     Result.reserve(4);
-    if (Current.getX() > 0)
-        Result.push_back(&getTile({Current.getX() - 1, Current.getY()}));
     if (Current.getY() > 0)
         Result.push_back(&getTile({Current.getX(), Current.getY() - 1}));
-    if (Current.getX() < mp_TilesWidth - 1)
-        Result.push_back(&getTile({Current.getX() + 1, Current.getY()}));
+    if (Current.getX() > 0)
+        Result.push_back(&getTile({Current.getX() - 1, Current.getY()}));
     if (Current.getY() < mp_TilesHeight - 1)
         Result.push_back(&getTile({Current.getX(), Current.getY() + 1}));
+    if (Current.getX() < mp_TilesWidth - 1)
+        Result.push_back(&getTile({Current.getX() + 1, Current.getY()}));
 
     return Result;
 }
@@ -153,15 +155,10 @@ bool TileGraph::AllPathesExists(const ShortestPathResult &Result) const
     return true;
 }
 
-// ShortestPathResult
-
-//ShortestPathResult &ShortestPathResult::operator=(ShortestPathResult &&Other)
-//{
-//    m_Destination = Other.m_Destination;
-//    Other.m_Destination = nullptr;
-//    m_Distance = std::move(Other.m_Distance);
-//    m_Next = std::move(Other.m_Next);
-//}
+ShortestPathResult TileGraph::getShortestPathToDestination(const QPoint &DestinationTilePos) const
+{
+    return getShortestPath<std::conditional<mpc_UseBFS, BFSSearch, DijkstraSearch>::type>(DestinationTilePos);
+}
 
 // DijkstraSearch
 
@@ -209,6 +206,51 @@ ShortestPathResult DijkstraSearch::operator()(const TileGraph &Graph, int X, int
 }
 
 ShortestPathResult DijkstraSearch::operator()(const TileGraph &Graph, const QPoint &TilePos)
+{
+    return operator ()(Graph, TilePos.x(), TilePos.y());
+}
+
+ShortestPathResult BFSSearch::operator()(const TileGraph &Graph, int X, int Y)
+{
+    const Tile *Destination = &Graph.getTile(X, Y);
+    QQueue<const Tile *> Queue;
+    Queue.enqueue(Destination);
+
+    ShortestPathResult Result;
+    Result.m_Distance = std::vector<int>(Graph.getSize(), std::numeric_limits<int>::max());
+    Result.m_Next = std::vector<const Tile *>(Graph.getSize(), nullptr);
+
+    Result.m_Distance[Graph.getTileIndex(Destination)] = 0;
+    Result.m_Next[Graph.getTileIndex(Destination)] = Destination;
+    Result.m_Destination = Destination;
+
+    while (!Queue.empty())
+    {
+        const Tile *CurrentTile = Queue.dequeue();
+        int СurrentDistance = Result.m_Distance[Graph.getTileIndex(CurrentTile)];
+        auto Neighbours = Graph.getPathNeighbours(*CurrentTile);
+        for (const Tile *Neighbour : Neighbours)
+        {
+            if (Neighbour->getType() == Tile::EType_Busy || Neighbour->getType() == Tile::EType_Temp)
+                continue;
+
+            int NewDistance = СurrentDistance + 1;
+            int OldDistance = Result.m_Distance[Graph.getTileIndex(Neighbour)];
+            if (NewDistance < OldDistance)
+            {
+                Result.m_Distance[Graph.getTileIndex(Neighbour)] = NewDistance;
+                Result.m_Next[Graph.getTileIndex(Neighbour)] = CurrentTile;
+                Queue.enqueue(Neighbour);
+            }
+
+        }
+    }
+
+    return Result;
+
+}
+
+ShortestPathResult BFSSearch::operator()(const TileGraph &Graph, const QPoint &TilePos)
 {
     return operator ()(Graph, TilePos.x(), TilePos.y());
 }

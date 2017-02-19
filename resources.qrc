@@ -18,5 +18,6 @@
         <file>Images/sell40.png</file>
         <file>Images/stone10.png</file>
         <file>Images/icecube10.png</file>
+        <file>Images/fire10.png</file>
     </qresource>
 </RCC>

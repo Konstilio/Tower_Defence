@@ -2,6 +2,8 @@
 #define LEVEL_H
 
 #include <QObject>
+#include "enemy.h"
+#include <random>
 
 class Level : public QObject
 {
@@ -11,6 +13,9 @@ public:
     // Enemies
     int getMaxEnemies() const;
     int IncEnemyTicks();
+    bool KillEnemy(); // returns true if next level
+    int getKilledEnemies() const;
+    EnemyFactory::EEnemy GenerateEnemyId() const;
 
     // User
     int getLifes() const;
@@ -21,13 +26,26 @@ public:
 
     // General
     int getLevelNumber();
-    void NextLevel();
+    bool NextLevel();
 
 private:
     // Enemies
     int mp_MaxEnemies = 20;
-    int mp_EnemyTicks = 80;
+    int mp_EnemyTicks = 140;
     int mp_EnemyCurrentTicks = 80;
+    int mp_LevelEnemies = 20; // 1 Level needs 20 killed enemies
+    int mp_OverallKilledEnemies = 0;
+    int mp_KilledLevelEnemies = 0;
+
+    // Enemy Generation
+    std::random_device mp_RandomDevice;
+    mutable std::mt19937 mp_Generator;
+    double mp_Probability1 = 0.8;
+    double mp_Probability2 = 0.15;
+    double mp_Probability3 = 0.05;
+    static constexpr double mp_ProbabilityRatio = 0.08;
+    static constexpr double mp_ProbabilityRatioHalf = 0.04;
+    mutable std::discrete_distribution<> mp_Distribution;
 
     // User
     int mp_Lifes = 20;
@@ -35,6 +53,8 @@ private:
 
     // General
     int mp_LevelNumber = 1;
+    static int constexpr mcp_MaxLevel = 10;
+
 };
 
 #endif // LEVEL_H

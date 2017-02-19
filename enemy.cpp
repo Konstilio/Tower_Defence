@@ -16,9 +16,6 @@ Enemy::Enemy(QGraphicsItem *Parent)
 
 Enemy::~Enemy()
 {
- #ifdef QT_DEBUG
-    qDebug() << "~Enemy()";
-#endif
 }
 
 // Needed For QT
@@ -98,7 +95,7 @@ Enemy *EnemyFactory::Create(EEnemy EnemyId)
 OutcastEnemy::OutcastEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_InitialHealth = 5;
+    mp_InitialHealth = 30;
     mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledOutcastEnemyPixmap());
 }
@@ -118,7 +115,7 @@ int OutcastEnemy::getSpeed() const
 OutlawEnemy::OutlawEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_InitialHealth = 15;
+    mp_InitialHealth = 90;
     mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledOutlawEnemyPixmap());
 }
@@ -138,7 +135,7 @@ int OutlawEnemy::getSpeed() const
 KatanamenEnemy::KatanamenEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_InitialHealth = 10;
+    mp_InitialHealth = 30;
     mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledKatanamenEnemyPixmap());
 }

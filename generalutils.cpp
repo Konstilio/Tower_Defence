@@ -12,18 +12,19 @@ GeneralUtils::GeneralUtils()
         mp_TileSize = 40;
         mp_AmmoSize = 10;
     }
-    else if (rec.width() >= 1000)
+    else //if (rec.width() >= 1000)
     {
          mp_GameViewSize = QSize(900, 600);
          mp_TileSize = 30;
          mp_AmmoSize = 8;
     }
-    else
-    {
-         mp_GameViewSize = QSize(600, 400);
-         mp_TileSize = 20;
-         mp_AmmoSize = 6;
-    }
+// Not tested
+//    else
+//    {
+//         mp_GameViewSize = QSize(600, 400);
+//         mp_TileSize = 20;
+//         mp_AmmoSize = 6;
+//    }
 }
 
 GeneralUtils &GeneralUtils::Instance()
@@ -70,6 +71,11 @@ const QPixmap &GeneralUtils::AmmoIcePixmap() const
 const QPixmap &GeneralUtils::AmmoStonePixmap() const
 {
     return getAmmoBitmap(mp_AmmoStonePixmap, ":/Images/stone10.png");
+}
+
+const QPixmap &GeneralUtils::AmmoFirePixmap() const
+{
+    return getAmmoBitmap(mp_AmmoFirePixmap, ":/Images/fire10.png");
 }
 
 const QPixmap &GeneralUtils::TiledStartPixmap() const
