@@ -30,10 +30,10 @@ public:
 
 private:
     // Enemies
-    int mp_MaxEnemies = 20;
-    int mp_EnemyTicks = 140;
-    int mp_EnemyCurrentTicks = 80;
-    int mp_LevelEnemies = 20; // 1 Level needs 20 killed enemies
+    int mp_MaxEnemies = 10;
+    int mp_EnemyTicks = 120;
+    int mp_EnemyCurrentTicks = 0;
+    int mp_LevelEnemies = 10; // 1 Level needs 20 killed enemies
     int mp_OverallKilledEnemies = 0;
     int mp_KilledLevelEnemies = 0;
 

@@ -44,7 +44,7 @@ bool Enemy::Update()
     setPos(x() + dx, y() + dy);
 
     QLineF Line(pos(), mp_TargetPos);
-    return Line.length() < 0.1;
+    return Line.length() < getSpeed() / 2.;
 }
 
 void Enemy::setTargetPos(const QPointF &Target)
@@ -102,12 +102,12 @@ OutcastEnemy::OutcastEnemy(QGraphicsItem *Parent)
 
 int OutcastEnemy::getBonus() const
 {
-    return 1;
+    return 2;
 }
 
 int OutcastEnemy::getSpeed() const
 {
-    return ESpeed_Slow;
+    return ESpeed_Medium;
 }
 
 // OutlawEnemy
@@ -115,7 +115,7 @@ int OutcastEnemy::getSpeed() const
 OutlawEnemy::OutlawEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_InitialHealth = 90;
+    mp_InitialHealth = 120;
     mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledOutlawEnemyPixmap());
 }
@@ -135,14 +135,14 @@ int OutlawEnemy::getSpeed() const
 KatanamenEnemy::KatanamenEnemy(QGraphicsItem *Parent)
     : Enemy(Parent)
 {
-    mp_InitialHealth = 30;
+    mp_InitialHealth = 40;
     mp_Health = mp_InitialHealth;
     setPixmap(GeneralUtils::Instance().TiledKatanamenEnemyPixmap());
 }
 
 int KatanamenEnemy::getBonus() const
 {
-    return 4;
+    return 5;
 }
 
 int KatanamenEnemy::getSpeed() const

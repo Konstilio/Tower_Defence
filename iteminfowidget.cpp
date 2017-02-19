@@ -68,7 +68,7 @@ QString ItemInfoWidget::getEnemySpeedString(const QPointer<Enemy> &EnemyItem)
     case Enemy::ESpeed_Slow:
         return "slow";
     case Enemy::ESpeed_Medium:
-        return "medium";
+        return "middle";
     case Enemy::ESpeed_Fast:
         return "fast";
     }

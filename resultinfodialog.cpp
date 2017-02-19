@@ -1,5 +1,5 @@
 #include "resultinfodialog.h"
-#include "ui_resultinfowidget.h"
+#include "ui_resultinfodialog.h"
 
 ResultInfoDialog::ResultInfoDialog(EStyle Style, QWidget *parent) :
     QDialog(parent),

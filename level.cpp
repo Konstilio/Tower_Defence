@@ -5,6 +5,7 @@ Level::Level(QObject *Parent)
     , mp_Generator(mp_RandomDevice())
     , mp_Distribution({mp_Probability1, mp_Probability2, mp_Probability3})
 {
+    mp_EnemyCurrentTicks = 5;
 }
 
 int Level::getMaxEnemies() const
@@ -73,10 +74,10 @@ bool Level::NextLevel()
         // Reset enemies
         mp_LevelEnemies += 5;
         mp_KilledLevelEnemies = 0;
-        mp_MaxEnemies += 10;
+        mp_MaxEnemies += 5;
 
         // Reset ticks
-        mp_EnemyTicks -= 5;
+        mp_EnemyTicks -= 6;
         mp_EnemyCurrentTicks = mp_EnemyTicks;
 
         // Reset Probabilities
@@ -84,6 +85,9 @@ bool Level::NextLevel()
         mp_Probability2 += mp_ProbabilityRatioHalf;
         mp_Probability3 += mp_ProbabilityRatioHalf;
         mp_Distribution.param({mp_Probability1, mp_Probability2, mp_Probability3});
+
+        // Add costs
+        mp_Costs += 5;
 
         return false;
     }

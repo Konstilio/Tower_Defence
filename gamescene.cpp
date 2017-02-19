@@ -451,7 +451,7 @@ void GameScene::RemoveReachedEnemies()
         QLineF Line(EnemyItem->Center(), EndPos);
 
         // Enemy reached the end
-        if (Line.length() < 0.5)
+        if (Line.length() <= EnemyItem->getSpeed() / 2.)
         {
             ++Reached;
             removeItem(EnemyItem);

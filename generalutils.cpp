@@ -9,14 +9,14 @@ GeneralUtils::GeneralUtils()
     if (rec.width() >= 1400)
     {
         mp_GameViewSize = QSize(1200, 900);
-        mp_TileSize = 40;
+        mp_TileSize = 50;
         mp_AmmoSize = 10;
     }
     else //if (rec.width() >= 1000)
     {
-         mp_GameViewSize = QSize(900, 600);
-         mp_TileSize = 30;
-         mp_AmmoSize = 8;
+         mp_GameViewSize = QSize(800, 600);
+         mp_TileSize = 40;
+         mp_AmmoSize = 10;
     }
 // Not tested
 //    else
@@ -35,72 +35,72 @@ GeneralUtils &GeneralUtils::Instance()
 
 const QPixmap &GeneralUtils::TiledTreeTowerPixmap() const
 {
-    return getTiledBitmap(mp_TiledTreeTowerPixmap, ":/Images/tree.png");
+    return getTiledBitmap(mp_TiledTreeTowerPixmap, ":/Images/treetower");
 }
 
 const QPixmap &GeneralUtils::TiledAcidTowerPixmap() const
 {
-    return getTiledBitmap(mp_TiledAcidTowerPixmap, ":/Images/acidtower.png");
+    return getTiledBitmap(mp_TiledAcidTowerPixmap, ":/Images/acidtower");
 }
 
 const QPixmap &GeneralUtils::TiledIceTowerPixmap() const
 {
-    return getTiledBitmap(mp_TiledIceTowerPixmap, ":/Images/icetower.png");
+    return getTiledBitmap(mp_TiledIceTowerPixmap, ":/Images/icetower");
 }
 
 const QPixmap &GeneralUtils::TiledStoneTowerPixmap() const
 {
-    return getTiledBitmap(mp_TiledStoneTowerPixmap, ":/Images/stonetower.png");
+    return getTiledBitmap(mp_TiledStoneTowerPixmap, ":/Images/stonetower");
 }
 
 const QPixmap &GeneralUtils::TiledSuperiorTowerPixmap() const
 {
-    return getTiledBitmap(mp_TiledSuperiorTowerPixmap, ":/Images/superiortower.png");
+    return getTiledBitmap(mp_TiledSuperiorTowerPixmap, ":/Images/superioir");
 }
 
 const QPixmap &GeneralUtils::AmmoAcidPixmap() const
 {
-    return getAmmoBitmap(mp_AmmoAcidPixmap, ":/Images/ammo.png");
+    return getAmmoBitmap(mp_AmmoAcidPixmap, ":/Images/ammo");
 }
 
 const QPixmap &GeneralUtils::AmmoIcePixmap() const
 {
-    return getAmmoBitmap(mp_AmmoIcePixmap, ":/Images/icecube10.png");
+    return getAmmoBitmap(mp_AmmoIcePixmap, ":/Images/icecube");
 }
 
 const QPixmap &GeneralUtils::AmmoStonePixmap() const
 {
-    return getAmmoBitmap(mp_AmmoStonePixmap, ":/Images/stone10.png");
+    return getAmmoBitmap(mp_AmmoStonePixmap, ":/Images/stone");
 }
 
 const QPixmap &GeneralUtils::AmmoFirePixmap() const
 {
-    return getAmmoBitmap(mp_AmmoFirePixmap, ":/Images/fire10.png");
+    return getAmmoBitmap(mp_AmmoFirePixmap, ":/Images/fire");
 }
 
 const QPixmap &GeneralUtils::TiledStartPixmap() const
 {
-    return getTiledBitmap(mp_TiledStartPixmap, ":/Images/starting.png");
+    return getTiledBitmap(mp_TiledStartPixmap, ":/Images/starting");
 }
 
 const QPixmap &GeneralUtils::TiledEndPixmap() const
 {
-     return getTiledBitmap(mp_TiledEndPixmap, ":/Images/ending.png");
+     return getTiledBitmap(mp_TiledEndPixmap, ":/Images/ending");
 }
 
 const QPixmap &GeneralUtils::TiledOutcastEnemyPixmap() const
 {
-    return getTiledBitmap(mp_TiledOutcastEnemyPixmap, ":/Images/mightyoutcast.png");
+    return getTiledBitmap(mp_TiledOutcastEnemyPixmap, ":/Images/outcast");
 }
 
 const QPixmap &GeneralUtils::TiledOutlawEnemyPixmap() const
 {
-    return getTiledBitmap(mp_TiledOutlawEnemyPixmap, ":/Images/outlaw.png");
+    return getTiledBitmap(mp_TiledOutlawEnemyPixmap, ":/Images/outlaw");
 }
 
 const QPixmap &GeneralUtils::TiledKatanamenEnemyPixmap() const
 {
-    return getTiledBitmap(mp_TiledKatanamenEnemyPixmap, ":/Images/royalkatanamen.png");
+    return getTiledBitmap(mp_TiledKatanamenEnemyPixmap, ":/Images/katanamen");
 }
 
 QSize GeneralUtils::GameViewSize() const
@@ -116,10 +116,7 @@ int GeneralUtils::TileSize() const
 const QPixmap& GeneralUtils::getTiledBitmap(QPixmap &CachedPixMap, const QString &Path) const
 {
     if (CachedPixMap.isNull())
-    {
-        QPixmap temp = QPixmap(Path);
-        CachedPixMap = temp.scaled(mp_TileSize, mp_TileSize);
-    }
+        CachedPixMap = QPixmap(Path + QString::number(mp_TileSize) + ".png");
 
     return CachedPixMap;
 }
@@ -127,10 +124,7 @@ const QPixmap& GeneralUtils::getTiledBitmap(QPixmap &CachedPixMap, const QString
 const QPixmap &GeneralUtils::getAmmoBitmap(QPixmap &CachedPixMap, const QString &Path) const
 {
     if (CachedPixMap.isNull())
-    {
-        QPixmap temp = QPixmap(Path);
-        CachedPixMap = temp.scaled(mp_AmmoSize, mp_AmmoSize);
-    }
+        CachedPixMap = QPixmap(Path + QString::number(mp_AmmoSize) + ".png");
 
     return CachedPixMap;
 }

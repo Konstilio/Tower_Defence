@@ -1,23 +1,48 @@
 <RCC>
     <qresource prefix="/">
-        <file>Images/acidtower.png</file>
-        <file>Images/icetower.png</file>
-        <file>Images/sandbackground.jpg</file>
-        <file>Images/stonetower.png</file>
-        <file>Images/tree.png</file>
-        <file>Images/ammo.png</file>
-        <file>Images/ending.png</file>
-        <file>Images/mightyoutcast.png</file>
-        <file>Images/outlaw.png</file>
-        <file>Images/royalkatanamen.png</file>
+        <file>Images/starting40.png</file>
+        <file>Images/starting50.png</file>
         <file>Images/starting.png</file>
+        <file>Images/ending50.png</file>
+        <file>Images/ending40.png</file>
+        <file>Images/ending.png</file>
+        <file>Images/katanamen40.png</file>
+        <file>Images/katanamen50.png</file>
+        <file>Images/katanamen.png</file>
+        <file>Images/outlaw40.png</file>
+        <file>Images/outlaw50.png</file>
+        <file>Images/outlaw.png</file>
+        <file>Images/outcast40.png</file>
+        <file>Images/outcast50.png</file>
+        <file>Images/outcast.png</file>
+        <file>Images/treetower40.png</file>
+        <file>Images/treetower50.png</file>
+        <file>Images/treetower.png</file>
+        <file>Images/acidtower40.png</file>
+        <file>Images/acidtower.png</file>
+        <file>Images/acidtower50.png</file>
+        <file>Images/icetower40.png</file>
+        <file>Images/icetower50.png</file>
+        <file>Images/icetower.png</file>
+        <file>Images/superioir40.png</file>
+        <file>Images/superioir50.png</file>
+        <file>Images/superioir.png</file>
+        <file>Images/stonetower40.png</file>
+        <file>Images/stonetower50.png</file>
+        <file>Images/stonetower.png</file>
+        <file>Images/pinkgirl.png</file>
+        <file>Images/fire10.png</file>
+        <file>Images/fire.png</file>
+        <file>Images/icecube10.png</file>
+        <file>Images/icecube.png</file>
+        <file>Images/stone10.png</file>
+        <file>Images/stone.png</file>
+        <file>Images/sell40.png</file>
+        <file>Images/sell.png</file>
+        <file>Images/sell30.png</file>
         <file>Images/upgrade.png</file>
         <file>Images/superiortower.png</file>
-        <file>Images/eifel.png</file>
-        <file>Images/sell30.png</file>
-        <file>Images/sell40.png</file>
-        <file>Images/stone10.png</file>
-        <file>Images/icecube10.png</file>
-        <file>Images/fire10.png</file>
+        <file>Images/sandbackground.jpg</file>
+        <file>Images/ammo10.png</file>
     </qresource>
 </RCC>

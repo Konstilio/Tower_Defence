@@ -9,12 +9,12 @@ UserBuildMenuWidget::UserBuildMenuWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->mp_TreeTowerButton->setIcon(QIcon(":/Images/tree.png"));
+    ui->mp_TreeTowerButton->setIcon(QIcon(":/Images/treetower.png"));
     ui->mp_AcidTowerButton->setIcon(QIcon(":/Images/acidtower.png"));
     ui->mp_IceTowerButton->setIcon(QIcon(":/Images/icetower.png"));
     ui->mp_StoneTowerButton->setIcon(QIcon(":/Images/stonetower.png"));
     ui->mp_UpgradeTowerButton->setIcon(QIcon(":/Images/upgrade.png"));
-    ui->mp_SellTowerButton->setIcon(QIcon(":/Images/sell30.png"));
+    ui->mp_SellTowerButton->setIcon(QIcon(":/Images/sell.png"));
 
     mp_ButtonGroup = new QButtonGroup(this);
     mp_ButtonGroup->addButton(ui->mp_TreeTowerButton, Tower::ETowerId_Tree);
