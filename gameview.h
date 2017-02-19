@@ -22,11 +22,13 @@ public:
     void mouseMoveEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
 
 public slots:
     void BuildWanted(int towerId);
     void onSceneUpdated();
+
+    void onGameWonLogic();
+    void onGameLostLogic();
     
     void Start();
     void Pause();
@@ -41,6 +43,8 @@ signals:
 
     void GameResumed();
     void GamePaused();
+    void GameLost();
+    void GameWon();
     
     void SelectionCleared();
     void LevelChanged(QPointer<Level> CurrentLevel);

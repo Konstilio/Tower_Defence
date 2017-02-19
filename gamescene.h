@@ -44,6 +44,8 @@ public:
 signals:
     void SceneUpdated();
     void LevelChanged(QPointer<Level> CurrentLevel);
+    void GameLost();
+    void GameWon();
 
 private:
     void ResetUpdateTimer();
@@ -55,12 +57,13 @@ private:
     // Tower updation
     void UpdateTowerTargets();
     void UpdateTowerTargetOnEnemy(Enemy *EnemyItem);
-    void TowerShoot(Tower *TowerItem);
+    void TowersShoot();
 
     // Ammo, Enemy Updates
     void RemoveOutOfRangeAmmos();
     void AddEnemy();
     void UpdateAmmoEnemyCollisions();
+    void MoveAmmos();
     void RemoveReachedEnemies();
     void MoveEnemies();
     void KillEnemy(Enemy *EnemyItem);
@@ -68,6 +71,9 @@ private:
 
     // CacheUpdates
     void UpdateTowerPosesCache(Tower *TowerItem, bool Add);
+
+    //Graph
+    void  SetTempTile(const QPoint &TilePos);
 
 private slots:
     void Update();

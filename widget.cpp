@@ -49,6 +49,8 @@ Widget::Widget(QWidget *parent) :
     connect(mp_GameStateWidget, &GameStateWidget::StartRequested, mp_View, &GameView::Start, Qt::QueuedConnection);
     connect(mp_GameStateWidget, &GameStateWidget::PauseRequested, mp_View, &GameView::Pause, Qt::QueuedConnection);
     connect(mp_GameStateWidget, &GameStateWidget::ResumeRequested, mp_View, &GameView::Resume, Qt::QueuedConnection);
+    connect(mp_View, &GameView::GameWon, mp_GameStateWidget, &GameStateWidget::onGameEnded);
+    connect(mp_View, &GameView::GameLost, mp_GameStateWidget, &GameStateWidget::onGameEnded);
 }
 
 Widget::~Widget()

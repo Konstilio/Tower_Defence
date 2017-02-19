@@ -77,14 +77,7 @@ void GameScene::AddTempGameItem(QGraphicsItem *Item, QPoint TilePos)
     Item->setX(GlobalPos.x());
     Item->setY(GlobalPos.y());
 
-    // TODO: move to sep function (same code as in MoveItem)
-    Tile *TempTile = &mp_Graph.getTile(TilePos);
-    if (TempTile->getType() == Tile::EType_Empty)
-    {
-        TempTile->setType(Tile::EType_Temp);
-        mp_TempPathResult = mp_Graph.getShortestPathToDestination(mp_EndTilePos);
-    }
-    mp_TempTile = TempTile;
+    SetTempTile(TilePos);
 }
 
 void GameScene::RemoveTempItem(QGraphicsItem *Item)
@@ -107,13 +100,17 @@ void GameScene::MoveTempItem(QGraphicsItem *Item, QPoint TilePos)
     if (mp_TempTile->getType() == Tile::EType_Temp)
         mp_TempTile->setType(Tile::EType_Empty);
 
-    Tile *TempTile = &mp_Graph.getTile(TilePos);
-    if (TempTile->getType() == Tile::EType_Empty)
+    SetTempTile(TilePos);
+}
+
+void GameScene::SetTempTile(const QPoint &TilePos)
+{
+    mp_TempTile = &mp_Graph.getTile(TilePos);
+    if (mp_TempTile->getType() == Tile::EType_Empty)
     {
-        TempTile->setType(Tile::EType_Temp);
+        mp_TempTile->setType(Tile::EType_Temp);
         mp_TempPathResult = mp_Graph.getShortestPathToDestination(mp_EndTilePos);
     }
-    mp_TempTile = TempTile;
 }
 
 void GameScene::InitMesh()
@@ -249,27 +246,17 @@ void GameScene::SellTower(Tower *TowerItem)
 
 void GameScene::Update()
 {
-    //QElapsedTimer timer;
-    //timer.start();
-
     AddEnemy();
     RemoveOutOfRangeAmmos();
     UpdateAmmoEnemyCollisions();
     RemoveReachedEnemies();
     UpdateTowerTargets();
-
-    for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
-         TowerShoot(*iTower);
-
-    for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ; ++iAmmo)
-        (*iAmmo)->Update();
-
+    TowersShoot();
+    MoveAmmos();
     MoveEnemies();
 
     if (IncUpdateSignal() == 0)
         emit SceneUpdated();
-    //qDebug() << "Update() took " << timer.elapsed() << " ms " << "Ammos: " << mp_Ammos.size();
-
 }
 
 void GameScene::ResetCache()
@@ -343,23 +330,28 @@ void GameScene::UpdateTowerTargetOnEnemy(Enemy *EnemyItem)
     }
 }
 
-void GameScene::TowerShoot(Tower *TowerItem)
+void GameScene::TowersShoot()
 {
-    if (!TowerItem->CanShoot())
-        return;
+    for (auto iTower = mp_Towers.cbegin(); iTower != mp_Towers.cend(); ++iTower)
+    {
+        auto *TowerItem = *iTower;
 
-    if (!TowerItem->ReadyShoot())
-        return;
+        if (!TowerItem->CanShoot())
+            continue;
 
-    if (!TowerItem->getHaveTarget())
-        return;
+        if (!TowerItem->ReadyShoot())
+            continue;
 
-    Ammo *AmmoItem = TowerItem->ShootAmmo();
-    addItem(AmmoItem);
-    AmmoItem->setX(TowerItem->Center().x());
-    AmmoItem->setY(TowerItem->Center().y());
-    AmmoItem->InitRotation();
-    mp_Ammos.insert(AmmoItem);
+        if (!TowerItem->getHaveTarget())
+            continue;
+
+        Ammo *AmmoItem = TowerItem->ShootAmmo();
+        addItem(AmmoItem);
+        AmmoItem->setX(TowerItem->Center().x());
+        AmmoItem->setY(TowerItem->Center().y());
+        AmmoItem->InitRotation();
+        mp_Ammos.insert(AmmoItem);
+    }
 }
 
 void GameScene::RemoveOutOfRangeAmmos()
@@ -443,6 +435,12 @@ void GameScene::UpdateAmmoEnemyCollisions()
     }
 }
 
+void GameScene::MoveAmmos()
+{
+    for (auto iAmmo = mp_Ammos.cbegin(); iAmmo != mp_Ammos.cend() ; ++iAmmo)
+        (*iAmmo)->Update();
+}
+
 void GameScene::RemoveReachedEnemies()
 {
     int Reached = 0;
@@ -470,6 +468,8 @@ void GameScene::RemoveReachedEnemies()
     {
         mp_Level->IncLifes(Reached);
         emit LevelChanged(mp_Level);
+        if (mp_Level->getLifes() <= 0)
+            emit GameLost();
     }
 }
 
@@ -493,16 +493,14 @@ void GameScene::KillEnemy(Enemy *EnemyItem)
     mp_Enemies.remove(EnemyItem);
     mp_Level->AddCosts(EnemyItem->getBonus());
     delete EnemyItem;
+    bool Won = false;
 
     if (mp_Level->KillEnemy())
-    {
-        if (mp_Level->NextLevel())
-        {
-            // Todo: win here
-        }
-    }
+        Won = mp_Level->NextLevel();
 
     emit LevelChanged(mp_Level);
+    if (Won)
+        emit GameWon();
 }
 
 

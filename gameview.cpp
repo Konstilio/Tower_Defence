@@ -5,6 +5,7 @@
 #include "tower.h"
 #include "enemy.h"
 #include "level.h"
+#include "resultinfodialog.h"
 
 GameView::GameView(QWidget *Parent)
     : QGraphicsView(Parent)
@@ -48,6 +49,8 @@ GameView::GameView(QWidget *Parent)
     connect(mp_BuildState, &BuildViewState::AttachedTowerCleared, this, &GameView::AttachedTowerCleared);
     connect(mp_Scene, &GameScene::SceneUpdated, this, &GameView::onSceneUpdated);
     connect(mp_Scene, &GameScene::LevelChanged, this, &GameView::LevelChanged, Qt::QueuedConnection);
+    connect(mp_Scene, &GameScene::GameLost, this, &GameView::onGameLostLogic, Qt::QueuedConnection);
+    connect(mp_Scene, &GameScene::GameWon, this, &GameView::onGameWonLogic, Qt::QueuedConnection);
 }
 
 void GameView::Start()
@@ -102,28 +105,6 @@ void GameView::mousePressEvent(QMouseEvent *event)
         mp_State->mousePressEvent(event);
 }
 
-void GameView::wheelEvent(QWheelEvent *event)
-{
-//    constexpr double scaleFactor = 1.15;
-//    if(event->delta() > 0)
-//    {
-//       auto nextZoom = mp_CurrentZoom * scaleFactor;
-//       if (nextZoom > 2.)
-//           return;
-
-//       mp_CurrentZoom = nextZoom;
-//       scale(scaleFactor, scaleFactor);
-//    }
-//    else
-//    {
-//       auto nextZoom = mp_CurrentZoom / scaleFactor;
-//       if (nextZoom < 1.)
-//           return;
-
-//       mp_CurrentZoom = nextZoom;
-//       scale(1.0 / scaleFactor, 1.0 / scaleFactor);
-//    }
-}
 
 void GameView::BuildWanted(int towerId)
 {
@@ -135,6 +116,26 @@ void GameView::onSceneUpdated()
 {
     if (mp_State)
         mp_State->onSceneUpdated();
+}
+
+void GameView::onGameWonLogic()
+{
+    Pause();
+    emit GameWon();
+
+    ResultInfoDialog *Dialog = new ResultInfoDialog(ResultInfoDialog::EStyle_Won, this);
+    Dialog->setModal(true);
+    Dialog->show();
+}
+
+void GameView::onGameLostLogic()
+{
+    Pause();
+    emit GameLost();
+
+    ResultInfoDialog *Dialog = new ResultInfoDialog(ResultInfoDialog::EStyle_Lost, this);
+    Dialog->setModal(true);
+    Dialog->show();
 }
 
 void GameView::ChangeState(GameViewState *State)

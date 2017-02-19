@@ -19,8 +19,10 @@ signals:
     void StartRequested();
     void PauseRequested();
     void ResumeRequested();
-    
-    
+
+public slots:
+    void onGameEnded();
+
 private:
     void onStartClicked();
     void onPauseClicked();

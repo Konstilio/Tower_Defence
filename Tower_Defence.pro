@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     enemy.cpp \
     level.cpp \
     iteminfowidget.cpp \
-    gamestatewidget.cpp
+    gamestatewidget.cpp \
+    resultinfodialog.cpp
 
 HEADERS  += widget.h \
     gameview.h \
@@ -55,13 +56,15 @@ HEADERS  += widget.h \
     enemy.h \
     level.h \
     iteminfowidget.h \
-    gamestatewidget.h
+    gamestatewidget.h \
+    resultinfodialog.h
 
 FORMS    += widget.ui \
     userstatuswidget.ui \
     userbuildmenuwidget.ui \
     iteminfowidget.ui \
-    gamestatewidget.ui
+    gamestatewidget.ui \
+    resultinfodialog.ui
 
 RESOURCES += \
     resources.qrc

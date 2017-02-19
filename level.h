@@ -13,7 +13,7 @@ public:
     // Enemies
     int getMaxEnemies() const;
     int IncEnemyTicks();
-    bool KillEnemy(); // returns true if next level
+    bool KillEnemy(); // returns true if needs next level
     int getKilledEnemies() const;
     EnemyFactory::EEnemy GenerateEnemyId() const;
 
@@ -26,7 +26,7 @@ public:
 
     // General
     int getLevelNumber();
-    bool NextLevel();
+    bool NextLevel(); // returns true if game won
 
 private:
     // Enemies

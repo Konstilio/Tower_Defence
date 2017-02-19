@@ -40,3 +40,11 @@ void GameStateWidget::onPauseClicked()
     }
 }
 
+void GameStateWidget::onGameEnded()
+{
+    mp_Paused = false;
+    ui->m_PauseButton->setText("Pause");
+    ui->m_PauseButton->setDisabled(true);
+    ui->m_StartButton->setText("Start");
+}
+

@@ -165,12 +165,15 @@ void BuildViewState::leaveEvent()
 
 void BuildViewState::mousePressEvent(QMouseEvent *event)
 {
-
     mp_WantBuild = event->button() == Qt::LeftButton;
     if (mp_WantBuild)
         mp_CanBuild = mp_Scene->CanBuildTower(mp_Tower);
+
     if ((mp_WantBuild && mp_CanBuild) || !mp_WantBuild)
         emit WantLeave();
+    else
+        mp_WantBuild = false;
+
 }
 
 void BuildViewState::onEnter()
