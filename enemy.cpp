@@ -2,7 +2,6 @@
 #include "ammo.h"
 #include "generalutils.h"
 #include <qmath.h>
-#include <cmath>
 #include <QLineF>
 #include <QDebug>
 
@@ -12,10 +11,6 @@ Enemy::Enemy(QGraphicsItem *Parent)
     : QObject(), QGraphicsPixmapItem(Parent)
 {
 
-}
-
-Enemy::~Enemy()
-{
 }
 
 // Needed For QT
@@ -37,8 +32,8 @@ int Enemy::getInitialHealth() const
 bool Enemy::Update()
 {
     auto alpha = rotation();
-    int dy = std::round(getSpeed() * qSin(qDegreesToRadians(alpha)));
-    int dx = std::round(getSpeed() * qCos(qDegreesToRadians(alpha)));
+    double dy = getSpeed() * qSin(qDegreesToRadians(alpha));
+    double dx = getSpeed() * qCos(qDegreesToRadians(alpha));
 
     // we use int here to avoid negative value that makes item non visible
     setPos(x() + dx, y() + dy);
@@ -62,10 +57,7 @@ const QPointF &Enemy::getTargetPoint()
 bool Enemy::Shooted(const Ammo *AmmoItem)
 {
     mp_Health -= AmmoItem->getPower();
-    if (mp_Health <= 0)
-        return true;
-
-    return false;
+    return (mp_Health <= 0);
 }
 
 QPointF Enemy::Center()

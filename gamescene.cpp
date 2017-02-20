@@ -16,6 +16,7 @@ GameScene::GameScene(int Width, int Height, int TileSize, QObject *Parent)
     , mp_TilesWidth(mp_Width / mp_TileSize)
     , mp_TilesHeight (mp_Height / mp_TileSize)
 {
+    mp_UpdateSignalTicks = mpc_UpdateSignalTicks;
     setSceneRect(0, 0, Width, Height);
 }
 
@@ -211,9 +212,7 @@ void GameScene::UpgradeTower(Tower *TowerItem)
     // Remove old cache
     UpdateTowerPosesCache(TowerItem, false);
 
-    QPointF Pos = TowerItem->pos();
     TowerItem->Upgrade();
-    TowerItem->setPos(Pos);
 
     // Add new cache
     UpdateTowerPosesCache(TowerItem, true);
@@ -265,7 +264,7 @@ int GameScene::IncUpdateSignal()
 {
     int Result = --mp_UpdateSignalTicks;
     if (mp_UpdateSignalTicks == 0)
-        mp_UpdateSignalTicks = 12;
+        mp_UpdateSignalTicks = mpc_UpdateSignalTicks;
     return Result;
 }
 

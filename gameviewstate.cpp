@@ -29,7 +29,7 @@ NormalViewState::NormalViewState(GameView *View, GameScene *Scene, QObject *Pare
 
 void NormalViewState::mouseMoveEvent(QMouseEvent *event)
 {
-
+    (void)event;
 }
 
 void NormalViewState::leaveEvent()

@@ -20,7 +20,7 @@ public:
     };
 
     Enemy(QGraphicsItem *Parent = 0);
-    ~Enemy();
+
 
     virtual int getBonus() const = 0;
     virtual int getSpeed() const = 0;

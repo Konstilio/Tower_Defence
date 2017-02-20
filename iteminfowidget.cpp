@@ -72,4 +72,6 @@ QString ItemInfoWidget::getEnemySpeedString(const QPointer<Enemy> &EnemyItem)
     case Enemy::ESpeed_Fast:
         return "fast";
     }
+
+    return "";
 }

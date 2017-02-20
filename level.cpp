@@ -3,7 +3,7 @@
 Level::Level(QObject *Parent)
     : QObject(Parent)
     , mp_Generator(mp_RandomDevice())
-    , mp_Distribution({mp_Probability1, mp_Probability2, mp_Probability3})
+    , mp_Distribution({mp_ProbabilityOutlaw, mp_ProbabilityOutcast, mp_ProbabilityKatanamen})
 {
     mp_EnemyCurrentTicks = 5;
 }
@@ -81,10 +81,10 @@ bool Level::NextLevel()
         mp_EnemyCurrentTicks = mp_EnemyTicks;
 
         // Reset Probabilities
-        mp_Probability1 -= mp_ProbabilityRatio;
-        mp_Probability2 += mp_ProbabilityRatioHalf;
-        mp_Probability3 += mp_ProbabilityRatioHalf;
-        mp_Distribution.param({mp_Probability1, mp_Probability2, mp_Probability3});
+        mp_ProbabilityOutlaw -= mp_ProbabilityRatio;
+        mp_ProbabilityOutcast += mp_ProbabilityRatioHalf;
+        mp_ProbabilityKatanamen += mp_ProbabilityRatioHalf;
+        mp_Distribution.param({mp_ProbabilityOutlaw, mp_ProbabilityOutcast, mp_ProbabilityKatanamen});
 
         // Add costs
         mp_Costs += 5;

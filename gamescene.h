@@ -17,7 +17,7 @@ class GameScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    GameScene(int Width, int Height, int TileSize, QObject *Parent = Q_NULLPTR);
+    GameScene(int Width, int Height, int TileSize, QObject *Parent = 0);
     ~GameScene();
 
     QPoint mapGlobalToTile(const QPointF &GloalPos) const;
@@ -109,7 +109,8 @@ private:
     Level* mp_Level = nullptr;
 
     // Limit sending scene updated signals
-    int mp_UpdateSignalTicks = 12;
+    int mp_UpdateSignalTicks = 0;
+    static constexpr int mpc_UpdateSignalTicks = 12;
     int IncUpdateSignal();
 };
 

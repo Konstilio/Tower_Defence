@@ -40,9 +40,9 @@ private:
     // Enemy Generation
     std::random_device mp_RandomDevice;
     mutable std::mt19937 mp_Generator;
-    double mp_Probability1 = 0.8;
-    double mp_Probability2 = 0.15;
-    double mp_Probability3 = 0.05;
+    double mp_ProbabilityOutlaw = 0.8;
+    double mp_ProbabilityOutcast = 0.15;
+    double mp_ProbabilityKatanamen = 0.05;
     static constexpr double mp_ProbabilityRatio = 0.08;
     static constexpr double mp_ProbabilityRatioHalf = 0.04;
     mutable std::discrete_distribution<> mp_Distribution;

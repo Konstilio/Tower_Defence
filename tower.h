@@ -33,11 +33,9 @@ public:
 
     Tower(QGraphicsItem *Parent = 0);
 
-    void InitRange();
     void Indicate(EIndicator Indicator);
     void ClearIndicator();
     bool ReadyShoot();
-    void ResetShootTicks();
 
     bool getHaveTarget() const;
     Enemy *getTarget() const;
@@ -61,7 +59,10 @@ public:
     Ammo *ShootAmmo();
 
 protected:
+    friend class TowerFactory;
     virtual QPixmap AmmoPixmap() const = 0;
+    void InitRange();
+    void ResetShootTicks();
 
     QGraphicsEllipseItem *mp_RangeCircle = nullptr;
     int mp_ShootTicks = 0;

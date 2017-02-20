@@ -95,6 +95,7 @@ void GameView::mouseMoveEvent(QMouseEvent *event)
 
 void GameView::leaveEvent(QEvent *event)
 {
+    (void)event;
     if (mp_State)
         mp_State->leaveEvent();
 }
