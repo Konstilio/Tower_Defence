@@ -69,12 +69,45 @@ FORMS    += widget.ui \
 RESOURCES += \
     resources.qrc
 
+win32 {
+
+contains(QT_ARCH, i386) {
+    message("32-bit")
+} else {
+    CONFIG(debug, debug|release) {
+        Qt5Cored.commands = copy /Y %QTDIR%\\bin\\Qt5Cored.dll debug
+        Qt5Cored.target = debug/Qt5Cored.dll
+        Qt5Guid.commands = copy /Y %QTDIR%\\bin\\Qt5Guid.dll debug
+        Qt5Guid.target = debug/Qt5Guid.dll
+        Qt5Widgetsd.commands = copy /Y %QTDIR%\\bin\\Qt5Widgetsd.dll debug
+        Qt5Widgetsd.target = debug/Qt5Widgetsd.dll
+
+        QMAKE_EXTRA_TARGETS += Qt5Cored Qt5Guid Qt5Widgetsd
+        POST_TARGETDEPS += debug/Qt5Cored.dll debug/Qt5Guid.dll debug/Qt5Widgetsd.dll
+    } else:CONFIG(release, debug|release) {
+        Qt5Core.commands = copy /Y %QTDIR%\\bin\\Qt5Core.dll release
+        Qt5Core.target = release/Qt5Core.dll
+        Qt5Gui.commands = copy /Y %QTDIR%\\bin\\Qt5Gui.dll release
+        Qt5Gui.target = release/Qt5Gui.dll
+        Qt5Widgets.commands = copy /Y %QTDIR%\\bin\\Qt5Widgets.dll release
+        Qt5Widgets.target = release/Qt5Widgets.dll
+
+        QMAKE_EXTRA_TARGETS += Qt5Core Qt5Gui Qt5Widgets
+        POST_TARGETDEPS += release/Qt5Core.dll release/Qt5Gui.dll release/Qt5Widgets.dll
+    } else {
+        error(Unknown set of dependencies.)
+    }
+}
+
+
+}
 macx {
     copyfiles.commands = cp -r $$PWD/Images $$OUT_PWD/$$TARGET\.app/Contents/Resources
     macdeployqt.commands = macdeployqt $$OUT_PWD/$$TARGET\.app -dmg -verbose=2
+
+    QMAKE_EXTRA_TARGETS += copyfiles
+    QMAKE_EXTRA_TARGETS += macdeployqt
+    POST_TARGETDEPS += copyfiles
+    POST_TARGETDEPS += macdeployqt
 }
 
-QMAKE_EXTRA_TARGETS += copyfiles
-QMAKE_EXTRA_TARGETS += macdeployqt
-POST_TARGETDEPS += copyfiles
-POST_TARGETDEPS += macdeployqt
